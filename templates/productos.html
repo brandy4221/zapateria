@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Zapatería Hortencia</title>
+  <link rel="stylesheet" href="/static/diseño.css">
+</head>
+<body>
+  <header>
+    <h1>Bienvenido, {{ nombre }}</h1>
+    <a href="/logout">Cerrar sesión</a>
+  </header>
+
+  <main>
+    <h2>Catálogo de productos</h2>
+    <div class="catalogo">
+      {% for p in productos %}
+        <div class="producto">
+          <h3>{{ p.nombre }}</h3>
+          <img src="{{ p.imagen }}" width="150">
+          <p><strong>${{ p.precio }}</strong></p>
+          <p>{{ p.categoria }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </main>
+</body>
+</html>

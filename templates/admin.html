@@ -1,0 +1,55 @@
+<!-- templates/admin.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Admin - Zapatería</title>
+  <link rel="stylesheet" href="/static/diseño.css">
+</head>
+<body>
+  <h2>Panel de Administración</h2>
+
+  <h3>Agregar producto</h3>
+  <form method="POST" action="{{ url_for('agregar_producto') }}">
+    <input type="text" name="nombre" placeholder="Nombre" required>
+    <input type="number" name="precio" placeholder="Precio" required>
+    <input type="text" name="imagen" placeholder="URL de imagen" required>
+    <input type="text" name="categoria" placeholder="Categoría" required>
+    <button type="submit">Agregar</button>
+  </form>
+
+  <h3>Lista de productos</h3>
+  <div id="productos"></div>
+
+  <script>
+    fetch("{{ url_for('ver_productos_json') }}")
+      .then(res => res.json())
+      .then(productos => {
+        const container = document.getElementById("productos");
+        container.innerHTML = '';
+        productos.forEach(p => {
+          const div = document.createElement("div");
+          div.innerHTML = `
+            <strong>${p.nombre}</strong> - $${p.precio} - <em>${p.categoria}</em><br>
+            <img src="${p.imagen}" width="100"><br><br>
+
+            <form method="POST" action="/editar-producto/${p.id}">
+              <input type="text" name="nombre" value="${p.nombre}" required>
+              <input type="number" name="precio" value="${p.precio}" required>
+              <input type="text" name="imagen" value="${p.imagen}" required>
+              <input type="text" name="categoria" value="${p.categoria}" required>
+              <button type="submit">Guardar cambios</button>
+            </form>
+
+            <form method="POST" action="/eliminar-producto/${p.id}" style="margin-top:10px;">
+              <button type="submit" style="background-color:red;color:white;">Eliminar</button>
+            </form>
+
+            <hr>
+          `;
+          container.appendChild(div);
+        });
+      });
+  </script>
+</body>
+</html>
