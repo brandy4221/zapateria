@@ -1,0 +1,138 @@
+/* Fuente y fondo general */
+body {
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #e3f2fd, #f0f2f5);
+    margin: 0;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Contenedor del formulario */
+.container {
+    background: #ffffff;
+    padding: 40px 45px;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Título */
+.container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #1f2937;
+    font-size: 26px;
+}
+
+/* Etiquetas */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Campos de entrada */
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.2s ease;
+    background-color: #f9fafb;
+}
+
+input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Botón */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #2563eb;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #1e40af;
+    transform: translateY(-1px);
+}
+
+/* Enlace de registro */
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.register-link a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+/* Alertas */
+.flash-messages {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 14px;
+    position: relative;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-left: 5px solid #10b981;
+}
+
+.alert-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-left: 5px solid #ef4444;
+}
+
+/* Animación suave */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

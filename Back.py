@@ -2,18 +2,19 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
 
 app = Flask(__name__)
 
-# Configuración de MySQL
-app.config['MYSQL_HOST'] = '127.0.0.1'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'zapateria'
-app.config['MYSQL_PORT'] = 3306
+# Configuración de MySQL usando variables de entorno
+app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST', '127.0.0.1')
+app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER', 'root')
+app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', '')
+app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'zapateria')
+app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 3306))
 
 mysql = MySQL(app)
-app.secret_key = 'clave_secreta_segura'
+app.secret_key = os.environ.get('SECRET_KEY', 'clave_secreta_segura')
 
 # Ruta raíz
 @app.route('/')
@@ -148,6 +149,11 @@ def ver_productos_json():
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
+# Health check endpoint para Render (opcional)
+@app.route('/healthz')
+def health():
+    return 'OK', 200
 
 if __name__ == '__main__':
     app.run(debug=True)
