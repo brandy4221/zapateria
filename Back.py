@@ -13,6 +13,9 @@ app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', '')
 app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'zapateria')
 app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 3306))
 
+app.secret_key = os.environ.get('SECRET_KEY', 'clave_secreta_segura')
+
+
 mysql = MySQL(app)
 app.secret_key = os.environ.get('SECRET_KEY', 'clave_secreta_segura')
 
