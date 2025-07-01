@@ -7,11 +7,17 @@ import os
 app = Flask(__name__)
 
 # Configuración de MySQL usando variables de entorno
-app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST', '127.0.0.1')
-app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER', 'root')
-app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', '')
-app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'zapateria')
-app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 3306))
+#app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST', '127.0.0.1')
+#app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER', 'root')
+#app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', '')
+#app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'zapateria')
+#app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 3306))
+# app.config['MYSQL_HOST'] = 'hopper.proxy.rlwy.net'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'cGdaJtdlaUbjKxSFJtSwvSHONLDdfKse'
+app.config['MYSQL_DB'] = 'railway'
+app.config['MYSQL_PORT'] = 39659  # Usa el puerto externo de Railway
+ 
 
 app.secret_key = os.environ.get('SECRET_KEY', 'clave_secreta_segura')
 
