@@ -42,8 +42,12 @@ def registro():
                 (nombre, email, hash_pass, 'cliente')
             )
             mysql.connection.commit()
-            flash('¡Registro exitoso! Ahora puedes iniciar sesión.', 'success')
-            return redirect(url_for('login'))
+            # Iniciar sesión automáticamente después del registro
+            session['logueado'] = True
+            session['nombre'] = nombre
+            session['rol'] = 'cliente'
+            flash('¡Registro exitoso! Bienvenido.', 'success')
+            return redirect(url_for('productos'))
     return render_template('registro.html')
 
 # Login
@@ -63,7 +67,8 @@ def login():
             session['nombre'] = usuario['nombre']
             session['rol'] = usuario['rol']
 
-            if usuario['rol'] == 'admin':
+            # Si es admin y es el correo especial
+            if usuario['rol'] == 'admin' and email == 'martinwzbrandon@gmail.com':
                 return redirect(url_for('admin'))
             else:
                 return redirect(url_for('productos'))

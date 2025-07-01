@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
-from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
 
@@ -19,30 +18,26 @@ def insertar_admin():
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         email = 'martinwzbrandon@gmail.com'
-        nombre = 'Administrador'
-        password = '123456'
-        rol = 'admin'
-
-        # Verificar si ya existe
-        cursor.execute('SELECT * FROM usuarios WHERE email = %s', (email,))
-        existe = cursor.fetchone()
-
-        if existe:
-            return 'Ya existe un usuario con ese correo.'
         
-        # Encriptar contraseña
-        hash_pass = generate_password_hash(password)
+        # Borra el usuario admin si existe
+        cursor.execute("DELETE FROM usuarios WHERE email = %s", (email,))
+        
+        # Inserta nuevo admin con contraseña hasheada ya creada
+        cursor.execute("""
+            INSERT INTO usuarios (nombre, email, password, rol) VALUES (
+                %s, %s, %s, %s
+            )
+        """, (
+            'Administrador',
+            email,
+            '$pbkdf2-sha256$29000$J6m9H2P6cTHeaV7YN3vfwQ$qlJv5yTK+6W1c0FR4ocArItnUQ3XQjV0U6OAxnmW2u0',
+            'admin'
+        ))
 
-        # Insertar admin
-        cursor.execute(
-            'INSERT INTO usuarios (nombre, email, password, rol) VALUES (%s, %s, %s, %s)',
-            (nombre, email, hash_pass, rol)
-        )
         mysql.connection.commit()
-        return 'Administrador insertado correctamente.'
-    
+        return "Admin actualizado correctamente."
     except Exception as e:
-        return f'Error: {str(e)}'
+        return f"Error: {str(e)}"
 
 if __name__ == '__main__':
     app.run(debug=True)
