@@ -17,19 +17,17 @@
 
     <section class="product-section">
       <h3>Caballero</h3>
-      <div class="row">
+      <div class="products-grid">
         {% for p in productos if p.categoria == "Caballero" %}
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-          <div class="card">
-            <img src="{{ p.imagen }}" alt="{{ p.nombre }}" class="card-img-top" />
-            <div class="card-body">
-              <h4 class="card-title">{{ p.nombre }}</h4>
-              <p class="product-price">${{ p.precio }}</p>
-              <a href="https://wa.me/4495810260?text=Hola,%20quiero%20adquirir%20el%20producto%20{{ p.nombre }}%20de%20Caballero." 
-                 target="_blank" class="btn-neon">
-                Comprar
-              </a>
-            </div>
+        <div class="product-card">
+          <img src="{{ p.imagen }}" alt="{{ p.nombre }}" />
+          <div class="card-body">
+            <h4 class="card-title">{{ p.nombre }}</h4>
+            <p class="product-price">${{ p.precio }}</p>
+            <a href="https://wa.me/4495810260?text=Hola,%20quiero%20adquirir%20el%20producto%20{{ p.nombre }}%20de%20Caballero." 
+               target="_blank" class="btn-neon">
+              Comprar
+            </a>
           </div>
         </div>
         {% endfor %}
@@ -38,19 +36,17 @@
 
     <section class="product-section">
       <h3>Dama</h3>
-      <div class="row">
+      <div class="products-grid">
         {% for p in productos if p.categoria == "Dama" %}
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-          <div class="card">
-            <img src="{{ p.imagen }}" alt="{{ p.nombre }}" class="card-img-top" />
-            <div class="card-body">
-              <h4 class="card-title">{{ p.nombre }}</h4>
-              <p class="product-price">${{ p.precio }}</p>
-              <a href="https://wa.me/4435810260?text=Hola,%20quiero%20adquirir%20el%20producto%20{{ p.nombre }}%20de%20Dama." 
-                 target="_blank" class="btn-neon">
-                Comprar
-              </a>
-            </div>
+        <div class="product-card">
+          <img src="{{ p.imagen }}" alt="{{ p.nombre }}" />
+          <div class="card-body">
+            <h4 class="card-title">{{ p.nombre }}</h4>
+            <p class="product-price">${{ p.precio }}</p>
+            <a href="https://wa.me/4435810260?text=Hola,%20quiero%20adquirir%20el%20producto%20{{ p.nombre }}%20de%20Dama." 
+               target="_blank" class="btn-neon">
+              Comprar
+            </a>
           </div>
         </div>
         {% endfor %}
