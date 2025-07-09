@@ -1,161 +1,138 @@
-/* Variables de diseño */
-:root {
-  --neon-pink: #ff4de1;
-  --neon-pink-light: #ff85ea;
-  --dark-bg: #121212;
-  --card-bg: #1a1a1a;
-  --text-color: #ffffff;
-}
-
-/* Estilos base */
+/* Fuente y fondo general */
 body {
-  background-color: var(--dark-bg);
-  color: var(--neon-pink);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  min-height: 100vh;
-  margin: 0;
-  padding: 20px 0 50px;
-  line-height: 1.6;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #e3f2fd, #f0f2f5);
+    margin: 0;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-/* Encabezado */
-.neon-header {
-  background: linear-gradient(90deg, var(--neon-pink), var(--neon-pink-light));
-  color: var(--dark-bg);
-  padding: 15px 30px;
-  border-radius: 0.75rem;
-  font-weight: 700;
-  box-shadow: 0 0 10px var(--neon-pink);
-  margin: 20px auto;
-  width: 95%;
-  max-width: 1100px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Botones */
-.btn-neon {
-  background-color: var(--neon-pink);
-  color: var(--text-color) !important;
-  border-radius: 50px;
-  font-weight: 700;
-  box-shadow: 0 0 12px var(--neon-pink);
-  transition: all 0.3s ease;
-  border: none;
-  padding: 8px 20px;
-  text-decoration: none;
-  display: inline-block;
-}
-
-.btn-neon:hover {
-  box-shadow: 0 0 20px var(--neon-pink-light), 0 0 30px var(--neon-pink-light);
-  transform: translateY(-2px);
-  color: var(--text-color);
-}
-
-/* Tarjetas de producto */
-.card-neon {
-  background: var(--card-bg);
-  border-radius: 12px !important;
-  border: none !important;
-  box-shadow: 0 0 20px rgba(255, 77, 225, 0.6);
-  color: var(--neon-pink-light);
-  transition: all 0.3s ease;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.card-neon:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 0 35px rgba(255, 133, 234, 0.8), 0 0 45px rgba(255, 77, 225, 0.8);
-}
-
-.card-neon img {
-  border-radius: 10px 10px 0 0 !important;
-  box-shadow: 0 0 15px rgba(255, 77, 225, 0.6);
-  max-height: 180px;
-  object-fit: contain;
-  width: 100%;
-  background: white;
-  padding: 10px;
-}
-
-.card-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 20px;
-}
-
-/* Tipografía */
-h1, h2, h3, h4 {
-  color: var(--neon-pink-light);
-  text-shadow: 0 0 8px var(--neon-pink);
-}
-
-h2 {
-  margin-top: 40px;
-  text-align: center;
-}
-
-h3 {
-  margin-top: 30px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--neon-pink);
-}
-
-/* Precios */
-.product-price {
-  font-size: 1.25rem;
-  margin: 10px 0;
-  color: var(--neon-pink-light);
-  font-weight: bold;
-}
-
-/* Contenedor principal */
-main.container {
-  max-width: 1100px;
-  padding: 0 15px;
-  margin-top: 30px;
-}
-
-/* Secciones de productos */
-.product-section {
-  margin-bottom: 50px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .neon-header {
-    flex-direction: column;
-    text-align: center;
-    gap: 15px;
-  }
-  
-  h2 {
-    font-size: 1.75rem;
-  }
-  
-  h3 {
-    font-size: 1.5rem;
-  }
-  
-  .card-neon {
-    margin-bottom: 20px;
-  }
-}
-
-@media (max-width: 576px) {
-  .neon-header {
-    padding: 15px;
-  }
-  
-  .btn-neon {
+/* Contenedor del formulario */
+.container {
+    background: #ffffff;
+    padding: 40px 45px;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
     width: 100%;
-    margin-top: 10px;
-  }
+    max-width: 400px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Título */
+.container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #1f2937;
+    font-size: 26px;
+}
+
+/* Etiquetas */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Campos de entrada */
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.2s ease;
+    background-color: #f9fafb;
+}
+
+input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Botón */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #2563eb;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #1e40af;
+    transform: translateY(-1px);
+}
+
+/* Enlace de registro */
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.register-link a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+/* Alertas */
+.flash-messages {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 14px;
+    position: relative;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-left: 5px solid #10b981;
+}
+
+.alert-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-left: 5px solid #ef4444;
+}
+
+/* Animación suave */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
