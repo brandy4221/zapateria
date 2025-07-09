@@ -1,138 +1,255 @@
-/* Fuente y fondo general */
+/* === Fondo general y fuente === */
 body {
-    font-family: 'Segoe UI', 'Arial', sans-serif;
-    background: linear-gradient(135deg, #e3f2fd, #f0f2f5);
-    margin: 0;
-    padding: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  background: linear-gradient(135deg, #e3f2fd, #f0f2f5);
+  margin: 0;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }
 
-/* Contenedor del formulario */
+/* === Contenedor general === */
 .container {
-    background: #ffffff;
-    padding: 40px 45px;
-    border-radius: 12px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.15);
 }
 
-/* Título */
-.container h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    color: #1f2937;
-    font-size: 26px;
+/* === Header === */
+.neon-header {
+  width: 100%;
+  background-color: #2563eb;
+  color: white;
+  padding: 20px 30px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-/* Etiquetas */
+.neon-header h1 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.btn-neon {
+  background-color: #1e40af;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-neon:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+/* === Títulos === */
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1f2937;
+}
+
+h3 {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  color: #1f2937;
+  font-size: 20px;
+}
+
+/* === Formulario login === */
 label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #374151;
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #374151;
 }
 
-/* Campos de entrada */
 input[type="email"],
 input[type="password"] {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: 14px;
-    transition: border-color 0.3s ease, box-shadow 0.2s ease;
-    background-color: #f9fafb;
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  background-color: #f9fafb;
+  transition: border-color 0.3s ease, box-shadow 0.2s ease;
 }
 
 input:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
-/* Botón */
 button {
-    width: 100%;
-    padding: 12px;
-    background-color: #2563eb;
-    color: white;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  padding: 12px;
+  background-color: #2563eb;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-    background-color: #1e40af;
-    transform: translateY(-1px);
+  background-color: #1e40af;
+  transform: translateY(-1px);
 }
 
-/* Enlace de registro */
+/* === Enlace de registro === */
 .register-link {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
-    color: #6b7280;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #6b7280;
 }
 
 .register-link a {
-    color: #2563eb;
-    font-weight: 600;
-    text-decoration: none;
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .register-link a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
-/* Alertas */
+/* === Sección de productos === */
+.product-section {
+  margin-top: 30px;
+}
+
+/* === Sistema de columnas === */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.col-12 {
+  flex: 0 0 100%;
+}
+.col-sm-6 {
+  flex: 0 0 48%;
+}
+.col-md-4 {
+  flex: 0 0 31%;
+}
+.col-lg-3 {
+  flex: 0 0 23%;
+}
+
+@media (max-width: 768px) {
+  .col-sm-6,
+  .col-md-4,
+  .col-lg-3 {
+    flex: 0 0 100%;
+  }
+}
+
+/* === Cards de productos === */
+.card {
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card-img-top {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 15px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 10px;
+}
+
+.product-price {
+  font-size: 14px;
+  color: #4b5563;
+  margin-bottom: 12px;
+}
+
+/* Botón en la card */
+.card .btn-neon {
+  width: 100%;
+  text-align: center;
+}
+
+/* === Alertas === */
 .flash-messages {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .alert {
-    padding: 12px 15px;
-    border-radius: 8px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    font-size: 14px;
-    position: relative;
-    animation: fadeIn 0.5s ease-in-out;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  font-size: 14px;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .alert-success {
-    background-color: #d1fae5;
-    color: #065f46;
-    border-left: 5px solid #10b981;
+  background-color: #d1fae5;
+  color: #065f46;
+  border-left: 5px solid #10b981;
 }
 
 .alert-error {
-    background-color: #fee2e2;
-    color: #991b1b;
-    border-left: 5px solid #ef4444;
+  background-color: #fee2e2;
+  color: #991b1b;
+  border-left: 5px solid #ef4444;
 }
 
-/* Animación suave */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-5px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
