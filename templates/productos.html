@@ -2,51 +2,81 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Zapatería Hortencia</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     body {
-      background-color: #000;
-      color: #ff00aa;
+      background-color: #121212;
+      color: #ff4de1;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding-bottom: 50px;
     }
+
     .btn-neon {
-      background-color: #ff00aa;
+      background-color: #ff4de1;
       color: white !important;
       border-radius: 50px;
       font-weight: 700;
-      box-shadow: 0 0 8px #ff00aa;
+      box-shadow: 0 0 12px #ff4de1;
+      transition: box-shadow 0.3s ease;
     }
+    .btn-neon:hover {
+      box-shadow: 0 0 20px #ff85ea, 0 0 30px #ff85ea;
+      color: #fff;
+    }
+
     .neon-header {
-      background: linear-gradient(90deg, #ff00aa, #ff66cc);
-      color: black;
+      background: linear-gradient(90deg, #ff4de1, #ff85ea);
+      color: #121212;
       padding: 15px 30px;
-      border-radius: 0.5rem;
-      font-weight: 600;
+      border-radius: 0.75rem;
+      font-weight: 700;
+      box-shadow: 0 0 10px #ff4de1;
+      margin-bottom: 40px;
     }
+
     .card-neon {
-      background: #111;
+      background: #1a1a1a;
       border-radius: 12px;
-      box-shadow: 0 0 15px #ff00aa99;
-      color: #ff66cc;
+      box-shadow: 0 0 20px #ff4de1aa;
+      color: #ff85ea;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-neon:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 0 35px #ff85eacc, 0 0 45px #ff4de1cc;
     }
     .card-neon img {
-      border-radius: 8px;
-      box-shadow: 0 0 10px #ff00aa88;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #ff4de1aa;
+      max-height: 180px;
+      object-fit: contain;
+    }
+
+    h2, h3 {
+      color: #ff85ea;
+      text-shadow: 0 0 8px #ff4de1;
+    }
+
+    main.container {
+      max-width: 1100px;
     }
   </style>
 </head>
 <body>
-  <header class="neon-header d-flex justify-content-between align-items-center mb-4">
+  <header class="neon-header d-flex justify-content-between align-items-center">
     <h1 class="mb-0">Bienvenido, {{ nombre }}</h1>
     <a href="/logout" class="btn btn-neon">Cerrar sesión</a>
   </header>
 
   <main class="container">
-    <h2 class="text-center">Catálogo de productos</h2>
+    <h2 class="text-center mb-5">Catálogo de productos</h2>
+
     <section>
-      <h3>Caballero</h3>
+      <h3 class="mb-4">Caballero</h3>
       <div class="row g-4">
         {% for p in productos if p.categoria == "Caballero" %}
         <div class="col-6 col-md-3">
@@ -60,8 +90,9 @@
         {% endfor %}
       </div>
     </section>
+
     <section class="mt-5">
-      <h3>Dama</h3>
+      <h3 class="mb-4">Dama</h3>
       <div class="row g-4">
         {% for p in productos if p.categoria == "Dama" %}
         <div class="col-6 col-md-3">
