@@ -1,43 +1,43 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+# back.py MEJORADO
+
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, make_response
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+import re
 
 app = Flask(__name__)
 
-# Configuración de MySQL usando variables de entorno
-#app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST', '127.0.0.1')
-#app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER', 'root')
-#app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', '')
-#app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'zapateria')
-#app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 3306))
+# Configuraciones de seguridad para cookies
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+
+# Configuración de base de datos Railway
 app.config['MYSQL_HOST'] = 'hopper.proxy.rlwy.net'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'cGdaJtdlaUbjKxSFJtSwvSHONLDdfKse'
 app.config['MYSQL_DB'] = 'railway'
-app.config['MYSQL_PORT'] = 39659  
-# Usa el puerto externo de Railway
- 
-
-app.secret_key = os.environ.get('SECRET_KEY', 'clave_secreta_segura')
-
+app.config['MYSQL_PORT'] = 39659
 
 mysql = MySQL(app)
 app.secret_key = os.environ.get('SECRET_KEY', 'clave_secreta_segura')
 
-# Ruta raíz
 @app.route('/')
 def index():
     return redirect(url_for('login'))
 
-# Registro
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
     if request.method == 'POST':
         nombre = request.form['nombre']
         email = request.form['email']
         password = request.form['password']
+
+        # Validar email básico
+        if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
+            flash("Correo inválido", "error")
+            return redirect(url_for('registro'))
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM usuarios WHERE email = %s', (email,))
@@ -52,7 +52,6 @@ def registro():
                 (nombre, email, hash_pass, 'cliente')
             )
             mysql.connection.commit()
-            # Iniciar sesión automáticamente después del registro
             session['logueado'] = True
             session['nombre'] = nombre
             session['rol'] = 'cliente'
@@ -60,7 +59,6 @@ def registro():
             return redirect(url_for('productos'))
     return render_template('registro.html')
 
-# Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -77,7 +75,6 @@ def login():
             session['nombre'] = usuario['nombre']
             session['rol'] = usuario['rol']
 
-            # Si es admin y es el correo especial
             if usuario['rol'] == 'admin' and email == 'martinwzbrandon@gmail.com':
                 return redirect(url_for('admin'))
             else:
@@ -87,24 +84,27 @@ def login():
 
     return render_template('login.html')
 
-# Página para cliente
 @app.route('/productos')
 def productos():
     if 'logueado' in session and session['rol'] == 'cliente':
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM productos')
         productos = cursor.fetchall()
-        return render_template('productos.html', productos=productos, nombre=session['nombre'])
+        response = make_response(render_template('productos.html', productos=productos, nombre=session['nombre']))
+        response.headers['Content-Security-Policy'] = "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline'"
+        response.headers['X-Frame-Options'] = 'DENY'
+        return response
     return redirect(url_for('login'))
 
-# Panel admin
 @app.route('/admin')
 def admin():
     if 'logueado' in session and session['rol'] == 'admin':
-        return render_template('admin.html', nombre=session['nombre'])
+        response = make_response(render_template('admin.html', nombre=session['nombre']))
+        response.headers['Content-Security-Policy'] = "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline'"
+        response.headers['X-Frame-Options'] = 'DENY'
+        return response
     return redirect(url_for('login'))
 
-# Agregar producto
 @app.route('/agregar-producto', methods=['POST'])
 def agregar_producto():
     if 'logueado' in session and session['rol'] == 'admin':
@@ -122,7 +122,6 @@ def agregar_producto():
         return redirect(url_for('admin'))
     return redirect(url_for('login'))
 
-# Editar producto
 @app.route('/editar-producto/<int:id>', methods=['POST'])
 def editar_producto(id):
     if 'logueado' in session and session['rol'] == 'admin':
@@ -139,7 +138,6 @@ def editar_producto(id):
         return redirect(url_for('admin'))
     return redirect(url_for('login'))
 
-# Eliminar producto
 @app.route('/eliminar-producto/<int:id>', methods=['POST'])
 def eliminar_producto(id):
     if 'logueado' in session and session['rol'] == 'admin':
@@ -149,7 +147,6 @@ def eliminar_producto(id):
         return redirect(url_for('admin'))
     return redirect(url_for('login'))
 
-# Productos en JSON (para JS del admin)
 @app.route('/ver-productos-json')
 def ver_productos_json():
     if 'logueado' in session and session['rol'] == 'admin':
@@ -159,16 +156,36 @@ def ver_productos_json():
         return jsonify(productos)
     return redirect(url_for('login'))
 
-# Logout
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
 
-# Health check endpoint para Render (opcional)
 @app.route('/healthz')
 def health():
     return 'OK', 200
+
+@app.route('/api/productos', methods=['GET'])
+def api_productos():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT id, nombre, precio FROM productos')
+    productos = cursor.fetchall()
+    return jsonify(productos)
+
+@app.route('/api/secure-productos', methods=['GET'])
+def secure_productos():
+    token = request.args.get('token')
+    if token != '123abc':
+        return jsonify({'error': 'No autorizado'}), 401
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM productos')
+    productos = cursor.fetchall()
+    return jsonify(productos)
+
+@app.route('/privacidad')
+def privacidad():
+    return render_template('privacidad.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
