@@ -1,5 +1,3 @@
-
-
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, make_response
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -9,9 +7,12 @@ import re
 
 app = Flask(__name__)
 
-# Configuraciones de seguridad para cookies
-app.config['SESSION_COOKIE_SECURE'] = True
-app.config['SESSION_COOKIE_HTTPONLY'] = True
+# Seguridad en cookies
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax'
+)
 
 # Configuración de base de datos Railway
 app.config['MYSQL_HOST'] = 'hopper.proxy.rlwy.net'
@@ -23,9 +24,21 @@ app.config['MYSQL_PORT'] = 39659
 mysql = MySQL(app)
 app.secret_key = os.environ.get('SECRET_KEY', 'clave_secreta_segura')
 
+
+@app.after_request
+def set_secure_headers(response):
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'"
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['Strict-Transport-Security'] = 'max-age=63072000; includeSubDomains; preload'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Referrer-Policy'] = 'no-referrer'
+    return response
+
+
 @app.route('/')
 def index():
     return redirect(url_for('login'))
+
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
@@ -34,7 +47,7 @@ def registro():
         email = request.form['email']
         password = request.form['password']
 
-        # Validar email básico
+        # Validación básica de email
         if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
             flash("Correo inválido", "error")
             return redirect(url_for('registro'))
@@ -58,6 +71,7 @@ def registro():
             flash('¡Registro exitoso! Bienvenido.', 'success')
             return redirect(url_for('productos'))
     return render_template('registro.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -84,6 +98,7 @@ def login():
 
     return render_template('login.html')
 
+
 @app.route('/productos')
 def productos():
     if 'logueado' in session and session['rol'] == 'cliente':
@@ -91,19 +106,17 @@ def productos():
         cursor.execute('SELECT * FROM productos')
         productos = cursor.fetchall()
         response = make_response(render_template('productos.html', productos=productos, nombre=session['nombre']))
-        response.headers['Content-Security-Policy'] = "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline'"
-        response.headers['X-Frame-Options'] = 'DENY'
         return response
     return redirect(url_for('login'))
+
 
 @app.route('/admin')
 def admin():
     if 'logueado' in session and session['rol'] == 'admin':
         response = make_response(render_template('admin.html', nombre=session['nombre']))
-        response.headers['Content-Security-Policy'] = "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline'"
-        response.headers['X-Frame-Options'] = 'DENY'
         return response
     return redirect(url_for('login'))
+
 
 @app.route('/agregar-producto', methods=['POST'])
 def agregar_producto():
@@ -122,6 +135,7 @@ def agregar_producto():
         return redirect(url_for('admin'))
     return redirect(url_for('login'))
 
+
 @app.route('/editar-producto/<int:id>', methods=['POST'])
 def editar_producto(id):
     if 'logueado' in session and session['rol'] == 'admin':
@@ -138,6 +152,7 @@ def editar_producto(id):
         return redirect(url_for('admin'))
     return redirect(url_for('login'))
 
+
 @app.route('/eliminar-producto/<int:id>', methods=['POST'])
 def eliminar_producto(id):
     if 'logueado' in session and session['rol'] == 'admin':
@@ -146,6 +161,7 @@ def eliminar_producto(id):
         mysql.connection.commit()
         return redirect(url_for('admin'))
     return redirect(url_for('login'))
+
 
 @app.route('/ver-productos-json')
 def ver_productos_json():
@@ -156,14 +172,17 @@ def ver_productos_json():
         return jsonify(productos)
     return redirect(url_for('login'))
 
+
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
 
+
 @app.route('/healthz')
 def health():
     return 'OK', 200
+
 
 @app.route('/api/productos', methods=['GET'])
 def api_productos():
@@ -171,6 +190,7 @@ def api_productos():
     cursor.execute('SELECT id, nombre, precio FROM productos')
     productos = cursor.fetchall()
     return jsonify(productos)
+
 
 @app.route('/api/secure-productos', methods=['GET'])
 def secure_productos():
@@ -183,35 +203,11 @@ def secure_productos():
     productos = cursor.fetchall()
     return jsonify(productos)
 
+
 @app.route('/privacidad')
 def privacidad():
     return render_template('privacidad.html')
-@app.route("/api/productos")
-def api_productos():
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT id, nombre, precio FROM productos")
-    productos = cursor.fetchall()
-    return jsonify(productos)
-@app.route("/api/secure-productos")
-def secure():
-    if request.args.get("token") != "123abc":
-        return {"error": "No autorizado"}, 401
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
-
-@app.after_request
-def set_secure_headers(response):
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'"
-    response.headers['X-Frame-Options'] = 'DENY'
-    response.headers['Strict-Transport-Security'] = 'max-age=63072000; includeSubDomains; preload'
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['Referrer-Policy'] = 'no-referrer'
-    return response
-
-# También en la configuración de Flask:
-app.config.update(
-    SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE='Lax'
-)
