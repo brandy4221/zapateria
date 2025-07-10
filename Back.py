@@ -1,4 +1,4 @@
-# back.py MEJORADO
+
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, make_response
 from flask_mysqldb import MySQL
@@ -186,6 +186,32 @@ def secure_productos():
 @app.route('/privacidad')
 def privacidad():
     return render_template('privacidad.html')
+@app.route("/api/productos")
+def api_productos():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT id, nombre, precio FROM productos")
+    productos = cursor.fetchall()
+    return jsonify(productos)
+@app.route("/api/secure-productos")
+def secure():
+    if request.args.get("token") != "123abc":
+        return {"error": "No autorizado"}, 401
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
+
+@app.after_request
+def set_secure_headers(response):
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'"
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['Strict-Transport-Security'] = 'max-age=63072000; includeSubDomains; preload'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Referrer-Policy'] = 'no-referrer'
+    return response
+
+# También en la configuración de Flask:
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax'
+)
