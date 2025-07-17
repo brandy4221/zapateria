@@ -1,5 +1,3 @@
-
-
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, make_response
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -12,6 +10,7 @@ app = Flask(__name__)
 # Configuraciones de seguridad para cookies
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 # Configuración de base de datos Railway
 app.config['MYSQL_HOST'] = 'hopper.proxy.rlwy.net'
@@ -90,19 +89,14 @@ def productos():
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM productos')
         productos = cursor.fetchall()
-        response = make_response(render_template('productos.html', productos=productos, nombre=session['nombre']))
-        response.headers['Content-Security-Policy'] = "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline'"
-        response.headers['X-Frame-Options'] = 'DENY'
-        return response
+        # No establecemos CSP aquí, queda para after_request
+        return render_template('productos.html', productos=productos, nombre=session['nombre'])
     return redirect(url_for('login'))
 
 @app.route('/admin')
 def admin():
     if 'logueado' in session and session['rol'] == 'admin':
-        response = make_response(render_template('admin.html', nombre=session['nombre']))
-        response.headers['Content-Security-Policy'] = "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline'"
-        response.headers['X-Frame-Options'] = 'DENY'
-        return response
+        return render_template('admin.html', nombre=session['nombre'])
     return redirect(url_for('login'))
 
 @app.route('/agregar-producto', methods=['POST'])
@@ -187,21 +181,15 @@ def secure_productos():
 def privacidad():
     return render_template('privacidad.html')
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
-
+# Esta función se ejecuta después de cada request para poner cabeceras seguras globales
 @app.after_request
 def set_secure_headers(response):
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'"
+    response.headers['Content-Security-Policy'] = "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline'"
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['Strict-Transport-Security'] = 'max-age=63072000; includeSubDomains; preload'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Referrer-Policy'] = 'no-referrer'
     return response
 
-# También en la configuración de Flask:
-app.config.update(
-    SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE='Lax'
-)
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
