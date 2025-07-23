@@ -1,27 +1,18 @@
-# Usamos una imagen ligera y segura de Python
-FROM python:3.11-slim
+# Usa una imagen oficial de Python
+FROM python:3.10-slim
 
-# Evitamos archivos bytecode .pyc y salida con buffering
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Establecemos el directorio de trabajo
+# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Instalamos dependencias del sistema necesarias para MySQL
-RUN apt-get update && apt-get install -y \
-    default-libmysqlclient-dev gcc \
-    && apt-get clean
+# Copia los archivos de tu proyecto al contenedor
+COPY . /app
 
-# Copiamos e instalamos dependencias Python
-COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Instala las dependencias
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
-# Copiamos el resto del código de la aplicación
-COPY . .
-
-# Expone el puerto que usará Flask
+# Expone el puerto 5000
 EXPOSE 5000
 
-# Comando para iniciar la app en producción
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+# Comando para correr la app
+CMD ["python", "back.py"]
