@@ -1,22 +1,24 @@
-# back.py actualizado con carrito e historial de compras
-
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, make_response
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import re
-from datetime import datetime
 
 app = Flask(__name__)
+
+# Configuraciones de seguridad para cookies
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# Configuración de base de datos Railway
 app.config['MYSQL_HOST'] = 'hopper.proxy.rlwy.net'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'cGdaJtdlaUbjKxSFJtSwvSHONLDdfKse'
 app.config['MYSQL_DB'] = 'railway'
 app.config['MYSQL_PORT'] = 39659
+
 mysql = MySQL(app)
 app.secret_key = os.environ.get('SECRET_KEY', 'clave_secreta_segura')
 
@@ -43,13 +45,15 @@ def registro():
             flash('¡El correo ya está registrado!', 'error')
         else:
             hash_pass = generate_password_hash(password)
-            cursor.execute('INSERT INTO usuarios (nombre, email, password, rol) VALUES (%s, %s, %s, %s)',
-                           (nombre, email, hash_pass, 'cliente'))
+            cursor.execute(
+                'INSERT INTO usuarios (nombre, email, password, rol) VALUES (%s, %s, %s, %s)',
+                (nombre, email, hash_pass, 'cliente')
+            )
             mysql.connection.commit()
             session['logueado'] = True
             session['nombre'] = nombre
             session['rol'] = 'cliente'
-            flash('¡Registro exitoso!', 'success')
+            flash('¡Registro exitoso! Bienvenido.', 'success')
             return redirect(url_for('productos'))
     return render_template('registro.html')
 
@@ -69,9 +73,13 @@ def login():
             session['nombre'] = usuario['nombre']
             session['rol'] = usuario['rol']
 
-            return redirect(url_for('admin' if usuario['rol'] == 'admin' else 'productos'))
+            if usuario['rol'] == 'admin' and email == 'martinwzbrandon@gmail.com':
+                return redirect(url_for('admin'))
+            else:
+                return redirect(url_for('productos'))
         else:
             flash('Correo o contraseña incorrectos', 'error')
+
     return render_template('login.html')
 
 @app.route('/productos')
@@ -98,53 +106,46 @@ def agregar_producto():
         categoria = request.form['categoria']
 
         cursor = mysql.connection.cursor()
-        cursor.execute('INSERT INTO productos (nombre, precio, imagen, categoria) VALUES (%s, %s, %s, %s)',
-                       (nombre, precio, imagen, categoria))
+        cursor.execute(
+            'INSERT INTO productos (nombre, precio, imagen, categoria) VALUES (%s, %s, %s, %s)',
+            (nombre, precio, imagen, categoria)
+        )
         mysql.connection.commit()
         return redirect(url_for('admin'))
     return redirect(url_for('login'))
 
-@app.route('/carrito')
-def carrito():
-    if 'logueado' in session:
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT c.id, p.nombre, p.precio FROM carrito c JOIN productos p ON c.producto_id = p.id WHERE c.usuario_id = %s',
-                       (session['id'],))
-        items = cursor.fetchall()
-        return render_template('carrito.html', items=items)
-    return redirect(url_for('login'))
+@app.route('/editar-producto/<int:id>', methods=['POST'])
+def editar_producto(id):
+    if 'logueado' in session and session['rol'] == 'admin':
+        nombre = request.form['nombre']
+        precio = request.form['precio']
+        imagen = request.form['imagen']
+        categoria = request.form['categoria']
 
-@app.route('/agregar-carrito/<int:id>')
-def agregar_carrito(id):
-    if 'logueado' in session:
         cursor = mysql.connection.cursor()
-        cursor.execute('INSERT INTO carrito (usuario_id, producto_id) VALUES (%s, %s)', (session['id'], id))
+        cursor.execute("""
+            UPDATE productos SET nombre=%s, precio=%s, imagen=%s, categoria=%s WHERE id=%s
+        """, (nombre, precio, imagen, categoria, id))
         mysql.connection.commit()
-        return redirect(url_for('carrito'))
+        return redirect(url_for('admin'))
     return redirect(url_for('login'))
 
-@app.route('/comprar')
-def comprar():
-    if 'logueado' in session:
+@app.route('/eliminar-producto/<int:id>', methods=['POST'])
+def eliminar_producto(id):
+    if 'logueado' in session and session['rol'] == 'admin':
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT producto_id FROM carrito WHERE usuario_id = %s', (session['id'],))
-        items = cursor.fetchall()
-        for item in items:
-            cursor.execute('INSERT INTO historial_compras (usuario_id, producto_id, fecha) VALUES (%s, %s, %s)',
-                           (session['id'], item['producto_id'], datetime.now()))
-        cursor.execute('DELETE FROM carrito WHERE usuario_id = %s', (session['id'],))
+        cursor.execute('DELETE FROM productos WHERE id=%s', (id,))
         mysql.connection.commit()
-        return redirect(url_for('historial'))
+        return redirect(url_for('admin'))
     return redirect(url_for('login'))
 
-@app.route('/historial')
-def historial():
-    if 'logueado' in session:
+@app.route('/ver-productos-json')
+def ver_productos_json():
+    if 'logueado' in session and session['rol'] == 'admin':
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT h.fecha, p.nombre, p.precio FROM historial_compras h JOIN productos p ON h.producto_id = p.id WHERE h.usuario_id = %s',
-                       (session['id'],))
-        historial = cursor.fetchall()
-        return render_template('historial.html', historial=historial)
+        cursor.execute('SELECT * FROM productos')
+        productos = cursor.fetchall()
+        return jsonify(productos)
     return redirect(url_for('login'))
 
 @app.route('/logout')
@@ -152,10 +153,41 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+@app.route('/healthz')
+def health():
+    return 'OK', 200
+
+@app.route('/api/productos', methods=['GET'])
+def api_productos():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT id, nombre, precio FROM productos')
+    productos = cursor.fetchall()
+    return jsonify(productos)
+
+@app.route('/api/secure-productos', methods=['GET'])
+def secure_productos():
+    token = request.args.get('token')
+    if token != '123abc':
+        return jsonify({'error': 'No autorizado'}), 401
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM productos')
+    productos = cursor.fetchall()
+    return jsonify(productos)
+
+# ✅ RUTA DE AVISO DE PRIVACIDAD (NECESARIA PARA login.html)
+@app.route('/privacidad')
+def privacidad():
+    return render_template('privacidad.html')
+
+# Cabeceras de seguridad
 @app.after_request
-def set_headers(response):
-    response.headers['Content-Security-Policy'] = "default-src 'self'"
+def set_secure_headers(response):
+    response.headers['Content-Security-Policy'] = "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline'"
     response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['Strict-Transport-Security'] = 'max-age=63072000; includeSubDomains; preload'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Referrer-Policy'] = 'no-referrer'
     return response
 
 if __name__ == '__main__':
