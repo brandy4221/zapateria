@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Historial de Compras</title>
+  <link rel="stylesheet" href="/static/diseño.css" />
+</head>
+<body>
+  <h1>Historial de Compras</h1>
+  <ul>
+    {% for item in historial %}
+      <li>{{ item.fecha }} - {{ item.nombre }} - ${{ item.precio }}</li>
+    {% endfor %}
+  </ul>
+  <a href="/productos">Volver al catálogo</a>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Carrito</title>
+  <link rel="stylesheet" href="/static/diseño.css" />
+</head>
+<body>
+  <h1>Carrito de Compras</h1>
+  <ul>
+    {% for item in items %}
+      <li>{{ item.nombre }} - ${{ item.precio }}</li>
+    {% endfor %}
+  </ul>
+  <a href="/comprar" class="btn-neon">Finalizar Compra</a>
+  <br>
+  <a href="/productos">Seguir comprando</a>
+</body>
+</html>

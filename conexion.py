@@ -1,5 +1,4 @@
 import MySQLdb
-from werkzeug.security import generate_password_hash
 
 # Conexión a Railway
 conexion = MySQLdb.connect(
@@ -12,21 +11,27 @@ conexion = MySQLdb.connect(
 
 cursor = conexion.cursor()
 
-# Datos del nuevo usuario
-email = 'martinwzbrandon@gmail.com'
-nombre = 'Administrador'
-password_plano = '123456'
-rol = 'admin'
-hashed_password = generate_password_hash(password_plano)
-
-# Crear usuario
+# Crear tabla carrito
 cursor.execute("""
-    INSERT INTO usuarios (nombre, email, password, rol)
-    VALUES (%s, %s, %s, %s)
-""", (nombre, email, hashed_password, rol))
-conexion.commit()
+    CREATE TABLE IF NOT EXISTS carrito (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        producto_id INT NOT NULL
+    );
+""")
 
-print(f"✅ Usuario admin creado correctamente: {email}")
+# Crear tabla historial de compras
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS historial_compras (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        producto_id INT NOT NULL,
+        fecha DATETIME NOT NULL
+    );
+""")
+
+conexion.commit()
+print("✅ Tablas 'carrito' y 'historial_compras' creadas o verificadas con éxito.")
 
 cursor.close()
 conexion.close()
