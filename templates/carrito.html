@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Carrito de Compras</title>
+  <link rel="stylesheet" href="/static/diseño.css">
+</head>
+<body>
+  <header class="neon-header">
+    <h1>🛒 Carrito de {{ session['nombre'] }}</h1>
+    <a href="/productos" class="btn-neon">Seguir comprando</a>
+    <a href="/logout" class="btn-neon">Cerrar sesión</a>
+  </header>
+
+  <main class="container">
+    {% if carrito %}
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Precio</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in carrito %}
+        <tr>
+          <td>{{ item.nombre }}</td>
+          <td>${{ item.precio }}</td>
+          <td>
+            <form action="/eliminar-del-carrito/{{ loop.index0 }}" method="post">
+              <button class="btn-neon">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p>Total: <strong>${{ total }}</strong></p>
+
+    <form action="/finalizar-compra" method="post">
+      <button type="submit" class="btn-neon">Finalizar compra</button>
+    </form>
+    {% else %}
+    <p>Tu carrito está vacío.</p>
+    {% endif %}
+  </main>
+</body>
+</html>
