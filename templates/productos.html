@@ -28,8 +28,8 @@
             <div class="card-body">
               <h4 class="card-title">{{ p.nombre }}</h4>
               <p class="product-price">${{ p.precio }}</p>
-              <form method="post" action="/agregar-carrito">
-                <input type="hidden" name="id" value="{{ p.id }}">
+              <!-- ✅ Botón corregido con URL dinámica -->
+              <form method="get" action="{{ url_for('agregar_al_carrito', id=p.id) }}">
                 <button type="submit" class="btn-neon">Agregar al carrito</button>
               </form>
             </div>
