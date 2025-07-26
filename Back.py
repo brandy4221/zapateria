@@ -73,7 +73,7 @@ def login():
             session['nombre'] = usuario['nombre']
             session['rol'] = usuario['rol']
 
-            if usuario['rol'] == 'admin' and email == 'martinwzbrandon@gmail.com':
+            if usuario['rol'] == 'admin':
                 return redirect(url_for('admin'))
             else:
                 return redirect(url_for('productos'))
@@ -175,12 +175,74 @@ def secure_productos():
     productos = cursor.fetchall()
     return jsonify(productos)
 
-# ✅ RUTA DE AVISO DE PRIVACIDAD (NECESARIA PARA login.html)
 @app.route('/privacidad')
 def privacidad():
     return render_template('privacidad.html')
 
-# Cabeceras de seguridad
+# -----------------------
+# Funciones carrito y compra
+# -----------------------
+
+@app.route('/carrito')
+def carrito():
+    if 'logueado' not in session:
+        return redirect(url_for('login'))
+    carrito = session.get('carrito', [])
+    return render_template('carrito.html', carrito=carrito)
+
+@app.route('/agregar-al-carrito/<int:id>')
+def agregar_al_carrito(id):
+    if 'logueado' not in session:
+        return redirect(url_for('login'))
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT id, nombre, precio FROM productos WHERE id = %s', (id,))
+    producto = cursor.fetchone()
+
+    if producto:
+        if 'carrito' not in session:
+            session['carrito'] = []
+        session['carrito'].append(producto)
+        session.modified = True
+        flash(f'{producto["nombre"]} agregado al carrito.', 'success')
+    return redirect(url_for('productos'))
+
+@app.route('/finalizar-compra', methods=['POST'])
+def finalizar_compra():
+    if 'logueado' not in session:
+        return redirect(url_for('login'))
+
+    carrito = session.get('carrito', [])
+    if not carrito:
+        flash('El carrito está vacío.', 'error')
+        return redirect(url_for('carrito'))
+
+    cursor = mysql.connection.cursor()
+    for item in carrito:
+        cursor.execute("""
+            INSERT INTO historial (usuario_id, producto, precio, fecha)
+            VALUES (%s, %s, %s, NOW())
+        """, (session['id'], item['nombre'], item['precio']))
+    mysql.connection.commit()
+
+    session['carrito'] = []
+    flash('✅ Compra finalizada y registrada en tu historial.', 'success')
+    return redirect(url_for('historial'))
+
+@app.route('/historial')
+def historial():
+    if 'logueado' not in session:
+        return redirect(url_for('login'))
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""
+        SELECT producto, precio, fecha FROM historial
+        WHERE usuario_id = %s ORDER BY fecha DESC
+    """, (session['id'],))
+    compras = cursor.fetchall()
+    return render_template('historial.html', historial=compras)
+
+# Cabeceras seguras
 @app.after_request
 def set_secure_headers(response):
     response.headers['Content-Security-Policy'] = "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline'"
