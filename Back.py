@@ -254,3 +254,53 @@ def set_secure_headers(response):
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
+
+# --- Endpoint API Login ---
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    data = request.get_json()
+    email = data.get('email')
+    clave = data.get('clave')
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM usuarios WHERE email = %s', (email,))
+    usuario = cursor.fetchone()
+
+    if usuario and check_password_hash(usuario['password'], clave):
+        return jsonify({
+            'token': f"user-{usuario['id']}-token",
+            'usuario_id': usuario['id'],
+            'rol': usuario['rol']
+        })
+    return jsonify({'error': 'Credenciales inválidas'}), 401
+
+# --- Endpoint API Productos ---
+@app.route('/api/productos', methods=['GET'])
+def api_lista_productos():
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer'):
+        return jsonify({'error': 'No autorizado'}), 401
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT id, nombre, precio FROM productos')
+    productos = cursor.fetchall()
+    return jsonify(productos)
+
+# --- Endpoint API Compras ---
+@app.route('/api/compras', methods=['POST'])
+def api_compra():
+    data = request.get_json()
+    usuario_id = data.get('usuario_id')
+    total = data.get('total')
+
+    if not usuario_id or not total:
+        return jsonify({'error': 'Datos incompletos'}), 400
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("""
+        INSERT INTO historial (usuario_id, producto, precio, fecha)
+        VALUES (%s, %s, %s, NOW())
+    """, (usuario_id, 'Compra API', total))
+    mysql.connection.commit()
+    return jsonify({'mensaje': 'Compra registrada correctamente'})
+
