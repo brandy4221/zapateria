@@ -255,7 +255,11 @@ def set_secure_headers(response):
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
 
-# --- Endpoint API Login ---
+# -----------------------------------------------
+# 🚧 RUTAS DE PRUEBA PARA POSTMAN (BORRAR DESPUÉS)
+# -----------------------------------------------
+
+# Endpoint para login desde Postman (devuelve un token simulado)
 @app.route('/api/login', methods=['POST'])
 def api_login():
     data = request.get_json()
@@ -274,7 +278,7 @@ def api_login():
         })
     return jsonify({'error': 'Credenciales inválidas'}), 401
 
-# --- Endpoint API Productos ---
+# Endpoint para listar productos con token Bearer
 @app.route('/api/productos', methods=['GET'])
 def api_lista_productos():
     auth_header = request.headers.get('Authorization')
@@ -286,7 +290,7 @@ def api_lista_productos():
     productos = cursor.fetchall()
     return jsonify(productos)
 
-# --- Endpoint API Compras ---
+# Endpoint para simular compra por API
 @app.route('/api/compras', methods=['POST'])
 def api_compra():
     data = request.get_json()
@@ -303,4 +307,3 @@ def api_compra():
     """, (usuario_id, 'Compra API', total))
     mysql.connection.commit()
     return jsonify({'mensaje': 'Compra registrada correctamente'})
-
