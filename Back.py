@@ -4,7 +4,7 @@ import MySQLdb.cursors
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import re
-
+from flask import abort
 app = Flask(__name__)
 
 # Configuraciones de seguridad para cookies
