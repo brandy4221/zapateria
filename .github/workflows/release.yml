@@ -28,7 +28,7 @@ jobs:
         run: pytest test_app.py
 
       - name: 📌 Mostrar versión
-        run: cat VERSION.txt
+        run: cat version.txt
 
       - name: 📋 Generar Tag de versión
         if: github.ref == 'refs/heads/main'
