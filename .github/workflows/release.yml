@@ -33,11 +33,11 @@ jobs:
       - name: 📋 Generar Tag de versión
         if: github.ref == 'refs/heads/main'
         run: |
-          VERSION=$(cat VERSION.txt)
+          version=$(cat version.txt)
           git config --global user.name "CI Bot"
           git config --global user.email "ci@example.com"
-          git tag "v$VERSION"
-          git push origin "v$VERSION"
+          git tag "v$version"
+          git push origin "v$version"
 
       - name: 🚀 Simular despliegue
-        run: echo "Desplegando versión $(cat VERSION.txt)..."
+        run: echo "Desplegando versión $(cat version.txt)..."
