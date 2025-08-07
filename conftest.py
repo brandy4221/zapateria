@@ -1,5 +1,5 @@
 import pytest
-from Back import app  # Asegúrate de que Back.py es el nombre correcto de tu archivo principal
+from Back import app  # Cambia "Back" si tu archivo principal tiene otro nombre
 
 @pytest.fixture
 def client():

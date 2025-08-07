@@ -1,11 +1,8 @@
 import pytest
-from unittest.mock import MagicMock
 from werkzeug.security import generate_password_hash
 
-# Configura un mock de cursor y conexion para mysql
-
 def setup_mock_cursor(mock_mysql, user_data=None, multiple_rows=None):
-    mock_cursor = MagicMock()
+    mock_cursor = mock_mysql.connection.cursor.return_value
     if user_data:
         mock_cursor.fetchone.return_value = user_data
     else:
@@ -16,9 +13,7 @@ def setup_mock_cursor(mock_mysql, user_data=None, multiple_rows=None):
     else:
         mock_cursor.fetchall.return_value = []
 
-    mock_mysql.connection.cursor.return_value = mock_cursor
-
-# ------------------------ TEST LOGIN ------------------------
+# ----------- TEST LOGIN EXITOSO ------------
 
 def test_api_login_success(client, mock_mysql):
     password = 'password123'
@@ -30,7 +25,7 @@ def test_api_login_success(client, mock_mysql):
         'password': hashed,
         'rol': 'cliente'
     }
-    setup_mock_cursor(mock_mysql, mock_user)
+    setup_mock_cursor(mock_mysql, user_data=mock_user)
 
     data = {
         'email': 'test@example.com',
@@ -42,10 +37,10 @@ def test_api_login_success(client, mock_mysql):
     assert response.status_code == 200
     assert 'token' in response.get_json()
 
+# ----------- TEST LOGIN FALLIDO ------------
 
 def test_api_login_failure(client, mock_mysql):
-    # No user returned
-    setup_mock_cursor(mock_mysql)
+    setup_mock_cursor(mock_mysql)  # Sin usuario
 
     data = {
         'email': 'fail@example.com',
@@ -57,7 +52,7 @@ def test_api_login_failure(client, mock_mysql):
     assert response.status_code == 401
     assert 'error' in response.get_json()
 
-# --------------------- TEST API PRODUCTOS ---------------------
+# ----------- TEST API PRODUCTOS ------------
 
 def test_api_productos(client, mock_mysql):
     mock_productos = [
@@ -71,7 +66,7 @@ def test_api_productos(client, mock_mysql):
     assert response.status_code == 200
     assert response.get_json() == mock_productos
 
-# --------------------- TEST VISTAS FLASK ---------------------
+# ----------- TEST VISTAS FLASK ------------
 
 def test_login_page(client):
     response = client.get('/login')
@@ -80,4 +75,4 @@ def test_login_page(client):
 
 def test_home_redirect(client):
     response = client.get('/')
-    assert response.status_code in (200, 302)  # Puede redirigir a login o home dependiendo de sesion
+    assert response.status_code in (200, 302)
