@@ -40,10 +40,8 @@ jobs:
           git config --global user.email "ci@example.com"
           version=$(cat version.txt)
           git tag "v$version"
-          # Cambia la URL remota para incluir el token
           git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git
           git push origin "v$version"
 
       - name: 🚀 Simular despliegue
         run: echo "Desplegando versión $(cat version.txt)..."
-        #hola
