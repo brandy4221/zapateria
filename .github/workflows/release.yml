@@ -25,7 +25,7 @@ jobs:
           pip install pytest
 
       - name: 🧪 Ejecutar pruebas
-        run: pytest tests/
+        run: pytest test_app.py
 
       - name: 📌 Mostrar versión
         run: cat VERSION.txt
