@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: ⬇️ Checkout código
         uses: actions/checkout@v2
+        with:
+          persist-credentials: false  # IMPORTANTE: para hacer push manual después
 
       - name: 🐍 Instalar Python
         uses: actions/setup-python@v4
@@ -30,13 +32,16 @@ jobs:
       - name: 📌 Mostrar versión
         run: cat version.txt
 
-      - name: 📋 Generar Tag de versión
+      - name: 📋 Generar Tag de versión y hacer push
         if: github.ref == 'refs/heads/main'
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          version=$(cat version.txt)
           git config --global user.name "CI Bot"
           git config --global user.email "ci@example.com"
+          version=$(cat version.txt)
           git tag "v$version"
+          git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git
           git push origin "v$version"
 
       - name: 🚀 Simular despliegue
