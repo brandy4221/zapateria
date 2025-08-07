@@ -9,11 +9,10 @@ on:
 jobs:
   build-test-release:
     runs-on: ubuntu-latest
+
     steps:
       - name: ⬇️ Checkout código
-        uses: actions/checkout@v2
-        with:
-          persist-credentials: false  # IMPORTANTE: para hacer push manual después
+        uses: actions/checkout@v3
 
       - name: 🐍 Instalar Python
         uses: actions/setup-python@v4
@@ -32,15 +31,16 @@ jobs:
       - name: 📌 Mostrar versión
         run: cat version.txt
 
-      - name: 📋 Generar Tag de versión y hacer push
+      - name: 📋 Generar Tag de versión
         if: github.ref == 'refs/heads/main'
         env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           git config --global user.name "CI Bot"
           git config --global user.email "ci@example.com"
           version=$(cat version.txt)
           git tag "v$version"
+          # Cambia la URL remota para incluir el token
           git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git
           git push origin "v$version"
 
