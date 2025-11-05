@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import re
 from flask import abort
+
 app = Flask(__name__)
 
 # Configuraciones de seguridad para cookies
@@ -26,17 +27,28 @@ app.secret_key = os.environ.get('SECRET_KEY', 'clave_secreta_segura')
 def index():
     return redirect(url_for('login'))
 
+# ===================================================
+# 🔹 Registro con validación de email y términos
+# ===================================================
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
     if request.method == 'POST':
         nombre = request.form['nombre']
         email = request.form['email']
         password = request.form['password']
+        aceptar = request.form.get('aceptar_terminos')
 
+        # Validar aceptación de términos
+        if not aceptar:
+            flash("Debes aceptar los Términos y Condiciones para registrarte.", "error")
+            return redirect(url_for('registro'))
+
+        # Validar email
         if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
             flash("Correo inválido", "error")
             return redirect(url_for('registro'))
 
+        # Verificar si el correo ya está registrado
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM usuarios WHERE email = %s', (email,))
         cuenta = cursor.fetchone()
@@ -56,6 +68,8 @@ def registro():
             flash('¡Registro exitoso! Bienvenido.', 'success')
             return redirect(url_for('productos'))
     return render_template('registro.html')
+
+# ===================================================
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -182,7 +196,6 @@ def privacidad():
 # -----------------------
 # Funciones carrito y compra
 # -----------------------
-
 @app.route('/carrito')
 def carrito():
     if 'logueado' not in session:
@@ -254,56 +267,3 @@ def set_secure_headers(response):
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
-
-# -----------------------------------------------
-# 🚧 RUTAS DE PRUEBA PARA POSTMAN (BORRAR DESPUÉS)
-# -----------------------------------------------
-
-# Endpoint para login desde Postman (devuelve un token simulado)
-@app.route('/api/login', methods=['POST'])
-def api_login():
-    data = request.get_json()
-    email = data.get('email')
-    clave = data.get('clave')
-
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT * FROM usuarios WHERE email = %s', (email,))
-    usuario = cursor.fetchone()
-
-    if usuario and check_password_hash(usuario['password'], clave):
-        return jsonify({
-            'token': f"user-{usuario['id']}-token",
-            'usuario_id': usuario['id'],
-            'rol': usuario['rol']
-        })
-    return jsonify({'error': 'Credenciales inválidas'}), 401
-
-# Endpoint para listar productos con token Bearer
-@app.route('/api/productos', methods=['GET'])
-def api_lista_productos():
-    auth_header = request.headers.get('Authorization')
-    if not auth_header or not auth_header.startswith('Bearer'):
-        return jsonify({'error': 'No autorizado'}), 401
-
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT id, nombre, precio FROM productos')
-    productos = cursor.fetchall()
-    return jsonify(productos)
-
-# Endpoint para simular compra por API
-@app.route('/api/compras', methods=['POST'])
-def api_compra():
-    data = request.get_json()
-    usuario_id = data.get('usuario_id')
-    total = data.get('total')
-
-    if not usuario_id or not total:
-        return jsonify({'error': 'Datos incompletos'}), 400
-
-    cursor = mysql.connection.cursor()
-    cursor.execute("""
-        INSERT INTO historial (usuario_id, producto, precio, fecha)
-        VALUES (%s, %s, %s, NOW())
-    """, (usuario_id, 'Compra API', total))
-    mysql.connection.commit()
-    return jsonify({'mensaje': 'Compra registrada correctamente'})

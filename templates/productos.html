@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Zapatería Hortencia - Productos</title>
@@ -41,4 +50,22 @@
     {% endfor %}
   </main>
 </body>
+<section class="map-container">
+  <h3>Encuéntranos</h3>
+  <div id="map" style="height:300px;width:100%;border-radius:10px;"></div>
+</section>
+
+<script>
+  function initMap() {
+    const ubicacion = { lat: 21.8853, lng: -102.2916 }; // Aguascalientes ejemplo
+    const mapa = new google.maps.Map(document.getElementById("map"), {
+      zoom: 14,
+      center: ubicacion,
+    });
+    new google.maps.Marker({ position: ubicacion, map: mapa, title: "Zapatería Hortencia" });
+  }
+</script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY&callback=initMap"></script>
+
 </html>

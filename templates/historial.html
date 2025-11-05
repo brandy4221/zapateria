@@ -1,31 +1,31 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Historial de Compras</title>
-  <link rel="stylesheet" href="/static/diseño.css">
-</head>
-<body>
-  <header class="neon-header">
-    <h1>📜 Historial de Compras</h1>
-    <a href="/productos" class="btn-neon">Volver al catálogo</a>
-    <a href="/logout" class="btn-neon">Cerrar sesión</a>
-  </header>
+  <!DOCTYPE html>
+  <html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <title>Historial de Compras</title>
+    <link rel="stylesheet" href="/static/diseño.css">
+  </head>
+  <body>
+    <header class="neon-header">
+      <h1>📜 Historial de Compras</h1>
+      <a href="/productos" class="btn-neon">Volver al catálogo</a>
+      <a href="/logout" class="btn-neon">Cerrar sesión</a>
+    </header>
 
-  <main class="container">
-    {% if historial %}
-    <ul>
-      {% for compra in historial %}
-        <li>
-          {{ compra.fecha }} - 
-          {{ compra.producto }} - 
-          ${{ compra.precio }}
-        </li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p>No tienes compras registradas aún.</p>
-    {% endif %}
-  </main>
-</body>
-</html>
+    <main class="container">
+      {% if historial %}
+      <ul>
+        {% for compra in historial %}
+          <li>
+            {{ compra.fecha }} - 
+            {{ compra.producto }} - 
+            ${{ compra.precio }}
+          </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No tienes compras registradas aún.</p>
+      {% endif %}
+    </main>
+  </body>
+  </html>
