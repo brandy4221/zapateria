@@ -14,11 +14,12 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 # Configuración de base de datos Railway
-app.config['MYSQL_HOST'] = 'yamanote.proxy.rlwy.net'
+app.config['MYSQL_HOST'] = 'crossover.proxy.rlwy.net'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'cAIVufUhqilyQcyljngZppKBcPfJEzae'
+app.config['MYSQL_PASSWORD'] = 'BUTErcDTUHpxSkpZkOZdooYDdNFcgzzD'
 app.config['MYSQL_DB'] = 'railway'
-app.config['MYSQL_PORT'] = 21739
+app.config['MYSQL_PORT'] = 36112
+
 
 mysql = MySQL(app)
 app.secret_key = os.environ.get('SECRET_KEY', 'clave_secreta_segura')

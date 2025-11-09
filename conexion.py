@@ -1,18 +1,18 @@
 import MySQLdb
 from werkzeug.security import generate_password_hash
 
-# Conexión a Railway
+# 🚀 Nueva conexión a Railway
 conexion = MySQLdb.connect(
-    host='yamanote.proxy.rlwy.net',
+    host='crossover.proxy.rlwy.net',
     user='root',
-    passwd='cAIVufUhqilyQcyljngZppKBcPfJEzae',
+    passwd='BUTErcDTUHpxSkpZkOZdooYDdNFcgzzD',
     db='railway',
-    port=21739
+    port=36112
 )
 
 cursor = conexion.cursor()
 
-# Crear tablas necesarias
+# 🧱 Crear tabla de usuarios
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS usuarios (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -23,6 +23,7 @@ cursor.execute("""
     );
 """)
 
+# 🧱 Crear tabla de productos
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS productos (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -33,6 +34,7 @@ cursor.execute("""
     );
 """)
 
+# 🧱 Crear tabla de historial de compras
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS historial (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -44,6 +46,7 @@ cursor.execute("""
     );
 """)
 
+# 🧱 Crear tabla de carrito
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS carrito (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -55,7 +58,16 @@ cursor.execute("""
     );
 """)
 
-# Insertar usuario administrador si no existe
+# 🧱 Crear tabla de logs opcional (seguridad o auditoría)
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        evento VARCHAR(255),
+        fecha DATETIME DEFAULT NOW()
+    );
+""")
+
+# 👤 Crear usuario administrador
 email_admin = 'martinwzbrandon@gmail.com'
 nombre_admin = 'Administrador'
 password_clara = '123456'
@@ -77,4 +89,4 @@ conexion.commit()
 cursor.close()
 conexion.close()
 
-print("✅ Base de datos configurada completamente.")
+print("✅ Base de datos configurada completamente en Railway.")
