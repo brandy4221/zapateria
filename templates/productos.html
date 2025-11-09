@@ -21,6 +21,9 @@
     src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v18.0&appId=839837051738520&autoLogAppEvents=1">
   </script>
 
+  <!-- 🔹 Twitter SDK -->
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
   <style>
     /* 🔸 Estilos Responsivos y Limpios */
     body {
@@ -95,15 +98,12 @@
       margin: 5px 0;
     }
 
-    /* 🔸 Mapa y botones sociales */
-    .map-container {
-      margin: 40px auto;
-      text-align: center;
-      max-width: 900px;
-    }
-
-    .fb-share-button, .fb-login-button {
-      margin: 10px;
+    /* 🔸 Botones sociales */
+    .social-buttons {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
     }
 
     @media (max-width: 600px) {
@@ -116,8 +116,8 @@
     }
   </style>
 </head>
-<body>
 
+<body>
   <header class="neon-header">
     <h1>Bienvenido, {{ nombre }}</h1>
     <a href="/logout" class="btn-neon">Cerrar sesión</a>
@@ -138,13 +138,25 @@
           <div class="card-body">
             <h4>{{ p.nombre }}</h4>
             <p class="product-price">${{ p.precio }}</p>
+
             <form method="get" action="{{ url_for('agregar_al_carrito', id=p.id) }}">
               <button type="submit" class="btn-neon">Agregar al carrito</button>
             </form>
-            <!-- 🔹 Botón para compartir -->
-            <div class="fb-share-button"
-                 data-href="https://tusitio.com/producto/{{ p.id }}"
-                 data-layout="button_count">
+
+            <!-- 🔹 Botones sociales -->
+            <div class="social-buttons">
+              <!-- Compartir en Facebook -->
+              <div class="fb-share-button"
+                   data-href="https://zapateria-ayq0.onrender.com/producto/{{ p.id }}"
+                   data-layout="button_count">
+              </div>
+
+              <!-- Compartir en Twitter -->
+              <a class="twitter-share-button"
+                 href="https://twitter.com/intent/tweet?text=¡Mira este producto en Zapatería Hortencia!&url=https://zapateria-ayq0.onrender.com/producto/{{ p.id }}"
+                 data-size="small">
+                 Tweet
+              </a>
             </div>
           </div>
         </div>
@@ -154,29 +166,7 @@
     {% endfor %}
   </main>
 
-  <section class="map-container">
-    <h3>📍 Encuéntranos</h3>
-    <div id="map" style="height:300px;width:100%;border-radius:10px;"></div>
-  </section>
-
-  <!-- 🔹 Mapa Google -->
-  <script>
-    function initMap() {
-      const ubicacion = { lat: 21.8853, lng: -102.2916 }; // Aguascalientes ejemplo
-      const mapa = new google.maps.Map(document.getElementById("map"), {
-        zoom: 14,
-        center: ubicacion,
-      });
-      new google.maps.Marker({
-        position: ubicacion,
-        map: mapa,
-        title: "Zapatería Hortencia"
-      });
-    }
-  </script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY&callback=initMap"></script>
-
-  <!-- 🔥 Firebase (Integración directa sin backend) -->
+  <!-- 🔥 Firebase (solo analíticas) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js"></script>
 
@@ -196,6 +186,5 @@
     const app = firebase.initializeApp(firebaseConfig);
     const analytics = firebase.analytics();
   </script>
-
 </body>
 </html>
