@@ -1,21 +1,123 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
-</script>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Zapatería Hortencia - Productos</title>
   <link rel="stylesheet" href="/static/diseño.css" />
+
+  <!-- 🔹 Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V26XWVSSZ7"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V26XWVSSZ7');
+  </script>
+
+  <!-- 🔹 Facebook SDK -->
+  <div id="fb-root"></div>
+  <script async defer crossorigin="anonymous"
+    src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v18.0&appId=839837051738520&autoLogAppEvents=1">
+  </script>
+
+  <style>
+    /* 🔸 Estilos Responsivos y Limpios */
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background-color: #f8f8f8;
+    }
+
+    header.neon-header {
+      background: #222;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-neon {
+      background: #ff4081;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .btn-neon:hover {
+      background: #e91e63;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .product-section {
+      margin-bottom: 40px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .product-price {
+      color: #4CAF50;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+
+    /* 🔸 Mapa y botones sociales */
+    .map-container {
+      margin: 40px auto;
+      text-align: center;
+      max-width: 900px;
+    }
+
+    .fb-share-button, .fb-login-button {
+      margin: 10px;
+    }
+
+    @media (max-width: 600px) {
+      header.neon-header {
+        flex-direction: column;
+      }
+      .btn-neon {
+        width: 90%;
+      }
+    }
+  </style>
 </head>
 <body>
+
   <header class="neon-header">
     <h1>Bienvenido, {{ nombre }}</h1>
     <a href="/logout" class="btn-neon">Cerrar sesión</a>
@@ -31,16 +133,18 @@
       <h3>{{ categoria }}</h3>
       <div class="row">
         {% for p in productos if p.categoria == categoria %}
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-          <div class="card">
-            <img src="{{ p.imagen }}" alt="{{ p.nombre }}" class="card-img-top" />
-            <div class="card-body">
-              <h4 class="card-title">{{ p.nombre }}</h4>
-              <p class="product-price">${{ p.precio }}</p>
-              <!-- ✅ Botón corregido con URL dinámica -->
-              <form method="get" action="{{ url_for('agregar_al_carrito', id=p.id) }}">
-                <button type="submit" class="btn-neon">Agregar al carrito</button>
-              </form>
+        <div class="card">
+          <img src="{{ p.imagen }}" alt="{{ p.nombre }}" />
+          <div class="card-body">
+            <h4>{{ p.nombre }}</h4>
+            <p class="product-price">${{ p.precio }}</p>
+            <form method="get" action="{{ url_for('agregar_al_carrito', id=p.id) }}">
+              <button type="submit" class="btn-neon">Agregar al carrito</button>
+            </form>
+            <!-- 🔹 Botón para compartir -->
+            <div class="fb-share-button"
+                 data-href="https://tusitio.com/producto/{{ p.id }}"
+                 data-layout="button_count">
             </div>
           </div>
         </div>
@@ -49,23 +153,49 @@
     </section>
     {% endfor %}
   </main>
+
+  <section class="map-container">
+    <h3>📍 Encuéntranos</h3>
+    <div id="map" style="height:300px;width:100%;border-radius:10px;"></div>
+  </section>
+
+  <!-- 🔹 Mapa Google -->
+  <script>
+    function initMap() {
+      const ubicacion = { lat: 21.8853, lng: -102.2916 }; // Aguascalientes ejemplo
+      const mapa = new google.maps.Map(document.getElementById("map"), {
+        zoom: 14,
+        center: ubicacion,
+      });
+      new google.maps.Marker({
+        position: ubicacion,
+        map: mapa,
+        title: "Zapatería Hortencia"
+      });
+    }
+  </script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY&callback=initMap"></script>
+
+  <!-- 🔥 Firebase (Integración directa sin backend) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAHUcOQIoUe2yj22d2SYCRQpJbJTd-PgPc",
+      authDomain: "loginappinventor-4e62e.firebaseapp.com",
+      databaseURL: "https://loginappinventor-4e62e-default-rtdb.firebaseio.com",
+      projectId: "loginappinventor-4e62e",
+      storageBucket: "loginappinventor-4e62e.firebasestorage.app",
+      messagingSenderId: "920320791317",
+      appId: "1:920320791317:web:322577aa83b9573d844f1c",
+      measurementId: "G-P9T7TQD0TP"
+    };
+
+    // Inicializar Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics();
+  </script>
+
 </body>
-<section class="map-container">
-  <h3>Encuéntranos</h3>
-  <div id="map" style="height:300px;width:100%;border-radius:10px;"></div>
-</section>
-
-<script>
-  function initMap() {
-    const ubicacion = { lat: 21.8853, lng: -102.2916 }; // Aguascalientes ejemplo
-    const mapa = new google.maps.Map(document.getElementById("map"), {
-      zoom: 14,
-      center: ubicacion,
-    });
-    new google.maps.Marker({ position: ubicacion, map: mapa, title: "Zapatería Hortencia" });
-  }
-</script>
-
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY&callback=initMap"></script>
-
 </html>
