@@ -14,107 +14,6 @@
     gtag('js', new Date());
     gtag('config', 'G-V26XWVSSZ7');
   </script>
-
-  <!-- 🔹 Facebook SDK -->
-  <div id="fb-root"></div>
-  <script async defer crossorigin="anonymous"
-    src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v18.0&appId=839837051738520&autoLogAppEvents=1">
-  </script>
-
-  <!-- 🔹 Twitter SDK -->
-  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-  <style>
-    /* 🔸 Estilos Responsivos y Limpios */
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      background-color: #f8f8f8;
-    }
-
-    header.neon-header {
-      background: #222;
-      color: #fff;
-      text-align: center;
-      padding: 15px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .btn-neon {
-      background: #ff4081;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: 0.3s;
-    }
-
-    .btn-neon:hover {
-      background: #e91e63;
-    }
-
-    .container {
-      padding: 20px;
-      max-width: 1200px;
-      margin: auto;
-    }
-
-    .product-section {
-      margin-bottom: 40px;
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      overflow: hidden;
-      transition: transform 0.2s;
-    }
-
-    .card:hover {
-      transform: scale(1.03);
-    }
-
-    .card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-
-    .product-price {
-      color: #4CAF50;
-      font-weight: bold;
-      margin: 5px 0;
-    }
-
-    /* 🔸 Botones sociales */
-    .social-buttons {
-      margin-top: 10px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    @media (max-width: 600px) {
-      header.neon-header {
-        flex-direction: column;
-      }
-      .btn-neon {
-        width: 90%;
-      }
-    }
-  </style>
 </head>
 
 <body>
@@ -138,24 +37,26 @@
           <div class="card-body">
             <h4>{{ p.nombre }}</h4>
             <p class="product-price">${{ p.precio }}</p>
-
             <form method="get" action="{{ url_for('agregar_al_carrito', id=p.id) }}">
               <button type="submit" class="btn-neon">Agregar al carrito</button>
             </form>
 
             <!-- 🔹 Botones sociales -->
-            <div class="social-buttons">
-              <!-- Compartir en Facebook -->
+            <div class="social-share">
+              <!-- Facebook -->
               <div class="fb-share-button"
                    data-href="https://zapateria-ayq0.onrender.com/producto/{{ p.id }}"
                    data-layout="button_count">
               </div>
 
-              <!-- Compartir en Twitter -->
-              <a class="twitter-share-button"
-                 href="https://twitter.com/intent/tweet?text=¡Mira este producto en Zapatería Hortencia!&url=https://zapateria-ayq0.onrender.com/producto/{{ p.id }}"
-                 data-size="small">
-                 Tweet
+              <!-- Twitter -->
+              <a href="https://twitter.com/share"
+                 class="twitter-share-button"
+                 data-text="¡Mira este producto en Zapatería Hortencia!"
+                 data-url="https://zapateria-ayq0.onrender.com/producto/{{ p.id }}"
+                 data-hashtags="ZapateriaHortencia"
+                 data-show-count="false">
+              Tweet
               </a>
             </div>
           </div>
@@ -166,15 +67,22 @@
     {% endfor %}
   </main>
 
-  <!-- 🔥 Firebase (solo analíticas) -->
+  <!-- 🔹 Facebook SDK -->
+  <div id="fb-root"></div>
+  <script async defer crossorigin="anonymous"
+    src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v18.0&appId=839837051738520&autoLogAppEvents=1">
+  </script>
+
+  <!-- 🔹 Twitter SDK -->
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+  <!-- 🔥 Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js"></script>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAHUcOQIoUe2yj22d2SYCRQpJbJTd-PgPc",
       authDomain: "loginappinventor-4e62e.firebaseapp.com",
-      databaseURL: "https://loginappinventor-4e62e-default-rtdb.firebaseio.com",
       projectId: "loginappinventor-4e62e",
       storageBucket: "loginappinventor-4e62e.firebasestorage.app",
       messagingSenderId: "920320791317",
@@ -182,9 +90,10 @@
       measurementId: "G-P9T7TQD0TP"
     };
 
-    // Inicializar Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const analytics = firebase.analytics();
+
+    console.log("✅ Firebase inicializado correctamente");
   </script>
 </body>
 </html>
