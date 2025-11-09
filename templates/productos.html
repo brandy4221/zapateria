@@ -102,8 +102,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       margin-top: 10px;
+      min-height: 30px; /* evita que colapse antes de que los botones carguen */
     }
 
     @media (max-width: 600px) {
@@ -118,7 +119,7 @@
 </head>
 
 <body>
-  <!-- ✅ Facebook SDK (debe ir dentro del body) -->
+  <!-- ✅ Facebook SDK -->
   <div id="fb-root"></div>
   <script async defer crossorigin="anonymous"
     src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v18.0&appId=839837051738520&autoLogAppEvents=1"
@@ -177,11 +178,19 @@
   <!-- ✅ Twitter SDK -->
   <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-  <!-- ✅ Reparsear SDKs tras cargar -->
+  <!-- ✅ Inicialización correcta de SDKs -->
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      if (typeof FB !== "undefined") FB.XFBML.parse();
-      if (typeof twttr !== "undefined") twttr.widgets.load();
+    // Facebook SDK
+    window.fbAsyncInit = function() {
+      FB.init({
+        xfbml: true,
+        version: 'v18.0'
+      });
+    };
+
+    // Twitter SDK
+    window.addEventListener('load', function() {
+      if (window.twttr && twttr.widgets) twttr.widgets.load();
     });
   </script>
 
