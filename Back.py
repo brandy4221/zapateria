@@ -1,35 +1,41 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import re
-from flask import abort
 
 app = Flask(__name__)
 
-# Configuraciones de seguridad para cookies
-app.config['SESSION_COOKIE_SECURE'] = True
+# ===================================================
+# 🔹 Configuración general y seguridad
+# ===================================================
+# ⚠️ Cambia esto a True solo en producción (HTTPS)
+app.config['SESSION_COOKIE_SECURE'] = False  # En local: False | En producción: True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
-# Configuración de base de datos Railway
+# ===================================================
+# 🔹 Configuración de base de datos (Railway)
+# ===================================================
 app.config['MYSQL_HOST'] = 'crossover.proxy.rlwy.net'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'BUTErcDTUHpxSkpZkOZdooYDdNFcgzzD'
 app.config['MYSQL_DB'] = 'railway'
 app.config['MYSQL_PORT'] = 36112
 
-
 mysql = MySQL(app)
 app.secret_key = os.environ.get('SECRET_KEY', 'clave_secreta_segura')
 
+# ===================================================
+# 🔹 Rutas principales
+# ===================================================
 @app.route('/')
 def index():
     return redirect(url_for('login'))
 
 # ===================================================
-# 🔹 Registro con validación de email y términos
+# 🔹 Registro de usuario
 # ===================================================
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
@@ -39,17 +45,14 @@ def registro():
         password = request.form['password']
         aceptar = request.form.get('aceptar_terminos')
 
-        # Validar aceptación de términos
         if not aceptar:
             flash("Debes aceptar los Términos y Condiciones para registrarte.", "error")
             return redirect(url_for('registro'))
 
-        # Validar email
         if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
             flash("Correo inválido", "error")
             return redirect(url_for('registro'))
 
-        # Verificar si el correo ya está registrado
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM usuarios WHERE email = %s', (email,))
         cuenta = cursor.fetchone()
@@ -71,7 +74,8 @@ def registro():
     return render_template('registro.html')
 
 # ===================================================
-
+# 🔹 Inicio de sesión
+# ===================================================
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -97,6 +101,9 @@ def login():
 
     return render_template('login.html')
 
+# ===================================================
+# 🔹 Catálogo de productos
+# ===================================================
 @app.route('/productos')
 def productos():
     if 'logueado' in session and session['rol'] == 'cliente':
@@ -106,12 +113,18 @@ def productos():
         return render_template('productos.html', productos=productos, nombre=session['nombre'])
     return redirect(url_for('login'))
 
+# ===================================================
+# 🔹 Panel administrador
+# ===================================================
 @app.route('/admin')
 def admin():
     if 'logueado' in session and session['rol'] == 'admin':
         return render_template('admin.html', nombre=session['nombre'])
     return redirect(url_for('login'))
 
+# ===================================================
+# 🔹 CRUD de productos (Admin)
+# ===================================================
 @app.route('/agregar-producto', methods=['POST'])
 def agregar_producto():
     if 'logueado' in session and session['rol'] == 'admin':
@@ -154,6 +167,9 @@ def eliminar_producto(id):
         return redirect(url_for('admin'))
     return redirect(url_for('login'))
 
+# ===================================================
+# 🔹 APIs
+# ===================================================
 @app.route('/ver-productos-json')
 def ver_productos_json():
     if 'logueado' in session and session['rol'] == 'admin':
@@ -162,15 +178,6 @@ def ver_productos_json():
         productos = cursor.fetchall()
         return jsonify(productos)
     return redirect(url_for('login'))
-
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
-
-@app.route('/healthz')
-def health():
-    return 'OK', 200
 
 @app.route('/api/productos', methods=['GET'])
 def api_productos():
@@ -190,13 +197,9 @@ def secure_productos():
     productos = cursor.fetchall()
     return jsonify(productos)
 
-@app.route('/privacidad')
-def privacidad():
-    return render_template('privacidad.html')
-
-# -----------------------
-# Funciones carrito y compra
-# -----------------------
+# ===================================================
+# 🔹 Carrito de compras
+# ===================================================
 @app.route('/carrito')
 def carrito():
     if 'logueado' not in session:
@@ -256,15 +259,42 @@ def historial():
     compras = cursor.fetchall()
     return render_template('historial.html', historial=compras)
 
-# Cabeceras seguras
+# ===================================================
+# 🔹 Otras rutas
+# ===================================================
+@app.route('/privacidad')
+def privacidad():
+    return render_template('privacidad.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+@app.route('/healthz')
+def health():
+    return 'OK', 200
+
+# ===================================================
+# 🔹 Cabeceras seguras (CSP corregida)
+# ===================================================
 @app.after_request
 def set_secure_headers(response):
-    response.headers['Content-Security-Policy'] = "default-src 'self'; img-src *; script-src 'self' 'unsafe-inline'"
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "img-src * data:; "
+        "script-src 'self' 'unsafe-inline' https://connect.facebook.net https://platform.twitter.com https://www.googletagmanager.com; "
+        "frame-src https://www.facebook.com https://platform.twitter.com; "
+        "style-src 'self' 'unsafe-inline';"
+    )
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['Strict-Transport-Security'] = 'max-age=63072000; includeSubDomains; preload'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Referrer-Policy'] = 'no-referrer'
     return response
 
+# ===================================================
+# 🔹 Ejecutar servidor
+# ===================================================
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
