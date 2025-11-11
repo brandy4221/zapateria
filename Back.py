@@ -271,7 +271,7 @@ def health():
     return 'OK', 200
 
 # =========================
-# 🛡️ Cabeceras CSP actualizadas
+# 🛡️ Cabeceras CSP actualizadas (✅ Facebook y Twitter permitidos)
 # =========================
 @app.after_request
 def set_secure_headers(response):
@@ -281,13 +281,15 @@ def set_secure_headers(response):
         "script-src 'self' 'unsafe-inline' "
         "https://connect.facebook.net "
         "https://platform.twitter.com "
+        "https://syndication.twitter.com "
         "https://www.googletagmanager.com "
         "https://www.gstatic.com "
         "https://www.googleapis.com; "
-        "frame-src https://www.facebook.com https://platform.twitter.com; "
+        "frame-src https://www.facebook.com https://www.facebook.com/plugins "
+        "https://platform.twitter.com https://syndication.twitter.com; "
         "style-src 'self' 'unsafe-inline'; "
     )
-    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'  # ✅ permite iframes seguros (Facebook/Twitter)
     response.headers['Strict-Transport-Security'] = 'max-age=63072000; includeSubDomains; preload'
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Referrer-Policy'] = 'no-referrer'
@@ -297,5 +299,4 @@ def set_secure_headers(response):
 # 🚀 Ejecución
 # =========================
 if __name__ == '__main__':
-    # Para entorno local (desactiva Secure=True si es necesario)
     app.run(debug=True, host='0.0.0.0')
