@@ -8,9 +8,9 @@ import re
 app = Flask(__name__)
 
 # =========================
-# 🔒 Configuración de seguridad y cookies
+# 🔒 Configuración básica de cookies
 # =========================
-app.config['SESSION_COOKIE_SECURE'] = True      # cambia a False si pruebas en local
+app.config['SESSION_COOKIE_SECURE'] = False     # ⚠️ Cambiado a False para entorno local
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
@@ -29,7 +29,6 @@ app.secret_key = os.environ.get('SECRET_KEY', 'clave_secreta_segura')
 # =========================
 # 🔹 Rutas principales
 # =========================
-
 @app.route('/')
 def index():
     return redirect(url_for('login'))
@@ -271,28 +270,20 @@ def health():
     return 'OK', 200
 
 # =========================
-# 🛡️ Cabeceras CSP actualizadas (✅ Facebook y Twitter permitidos)
+# 🚫 Sin cabeceras de seguridad (modo prueba)
 # =========================
 @app.after_request
-def set_secure_headers(response):
-    response.headers['Content-Security-Policy'] = (
-        "default-src 'self'; "
-        "img-src * data:; "
-        "script-src 'self' 'unsafe-inline' "
-        "https://connect.facebook.net "
-        "https://platform.twitter.com "
-        "https://syndication.twitter.com "
-        "https://www.googletagmanager.com "
-        "https://www.gstatic.com "
-        "https://www.googleapis.com; "
-        "frame-src https://www.facebook.com https://www.facebook.com/plugins "
-        "https://platform.twitter.com https://syndication.twitter.com; "
-        "style-src 'self' 'unsafe-inline'; "
-    )
-    response.headers['X-Frame-Options'] = 'SAMEORIGIN'  # ✅ permite iframes seguros (Facebook/Twitter)
-    response.headers['Strict-Transport-Security'] = 'max-age=63072000; includeSubDomains; preload'
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['Referrer-Policy'] = 'no-referrer'
+def disable_security_headers(response):
+    # Elimina las restricciones que bloqueaban los iframes y scripts externos
+    headers_to_remove = [
+        'Content-Security-Policy',
+        'X-Frame-Options',
+        'Strict-Transport-Security',
+        'X-Content-Type-Options',
+        'Referrer-Policy'
+    ]
+    for h in headers_to_remove:
+        response.headers.pop(h, None)
     return response
 
 # =========================
