@@ -4,7 +4,40 @@
   <meta charset="UTF-8">
   <title>Panel de Administración</title>
   <link rel="stylesheet" href="/static/diseño.css" />
+  
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+    }
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    table th {
+      background: #333;
+      color: #fff;
+    }
+    .btn-editar {
+      background: #007bff;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .btn-eliminar {
+      background: #dc3545;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+  </style>
 </head>
+
 <body>
   <header class="neon-header">
     <h1>Panel de administrador</h1>
@@ -12,17 +45,68 @@
   </header>
 
   <main class="container">
+
+    <!-- FORMULARIO DE AGREGAR PRODUCTO -->
     <h2>Agregar producto</h2>
     <form action="/agregar-producto" method="post">
       <input type="text" name="nombre" placeholder="Nombre" required>
       <input type="number" step="0.01" name="precio" placeholder="Precio" required>
       <input type="text" name="imagen" placeholder="URL de imagen" required>
+
       <select name="categoria" required>
         <option value="Caballero">Caballero</option>
         <option value="Dama">Dama</option>
       </select>
+
       <button type="submit" class="btn-neon">Agregar</button>
     </form>
+
+
+
+    <!-- TABLA DE PRODUCTOS -->
+    <h2 style="margin-top: 40px;">Productos registrados</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Imagen</th>
+          <th>Categoría</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for p in productos %}
+        <tr>
+          <td>{{ p.id }}</td>
+          <td>{{ p.nombre }}</td>
+          <td>${{ p.precio }}</td>
+          <td><img src="{{ p.imagen }}" alt="img" width="60"></td>
+          <td>{{ p.categoria }}</td>
+          
+          <td>
+            <!-- EDITAR -->
+            <form action="/editar-producto/{{ p.id }}" method="post" style="display:inline-block;">
+              <input type="text" name="nombre" value="{{ p.nombre }}" required>
+              <input type="number" step="0.01" name="precio" value="{{ p.precio }}" required>
+              <input type="text" name="imagen" value="{{ p.imagen }}" required>
+              <input type="text" name="categoria" value="{{ p.categoria }}" required>
+              <button class="btn-editar" type="submit">Editar</button>
+            </form>
+
+            <!-- ELIMINAR -->
+            <form action="/eliminar-producto/{{ p.id }}" method="post" style="display:inline-block;">
+              <button class="btn-eliminar" type="submit" onclick="return confirm('¿Eliminar este producto?')">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
   </main>
 </body>
 </html>

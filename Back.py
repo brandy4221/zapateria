@@ -119,7 +119,14 @@ def productos():
 @app.route('/admin')
 def admin():
     if 'logueado' in session and session['rol'] == 'admin':
-        return render_template('admin.html', nombre=session['nombre'])
+
+        # 🔥 CAMBIO AÑADIDO (ver productos)
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT * FROM productos")
+        productos = cursor.fetchall()
+
+        return render_template('admin.html', productos=productos, nombre=session['nombre'])
+
     return redirect(url_for('login'))
 
 @app.route('/agregar-producto', methods=['POST'])
@@ -274,7 +281,6 @@ def health():
 # =========================
 @app.after_request
 def disable_security_headers(response):
-    # Elimina las restricciones que bloqueaban los iframes y scripts externos
     headers_to_remove = [
         'Content-Security-Policy',
         'X-Frame-Options',
