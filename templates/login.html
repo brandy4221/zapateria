@@ -1,39 +1,132 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iniciar sesión</title>
-  <link rel="stylesheet" href="/static/diseño.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zapatería Hortencia - Productos</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='diseño.css') }}" />
+
+  <!-- 🟦 OpenGraph Fallback para Facebook -->
+  <meta property="og:title" content="Catálogo de productos - Zapatería Hortencia">
+  <meta property="og:description" content="Explora nuestro catálogo de productos.">
+  <meta property="og:image" content="https://zapateria-ayq0.onrender.com/static/logo.png">
+  <meta property="og:url" content="https://zapateria-ayq0.onrender.com/productos">
+  <meta property="og:type" content="website">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V26XWVSSZ7"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-V26XWVSSZ7');
+  </script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; margin: 0; background: #f8f8f8; }
+    header.neon-header {
+      background: #1a56db; color: #fff; padding: 15px; text-align: center;
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;
+    }
+    .btn-neon { background: #1939b7; color: #fff; padding: 10px 15px; border-radius: 8px;
+                text-decoration: none; font-weight: bold; transition: .3s; }
+    .btn-neon:hover { background: #0f2c8a; }
+    .container { max-width: 1200px; margin: 25px auto; background: #fff; padding: 20px;
+                 border-radius: 10px; }
+    .row { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap: 20px; }
+    .card {
+      background: #fff; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,.1);
+      text-align: center; padding-bottom: 15px; transition: transform .2s; overflow: hidden;
+    }
+    .card:hover { transform: scale(1.03); }
+    .card img { width: 100%; height: 180px; object-fit: cover; }
+    .product-price { font-weight: bold; color: #4CAF50; }
+    .social-share { display: flex; justify-content: center; gap: 10px; margin-top: 9px; }
+  </style>
 </head>
+
 <body>
-  <div class="container">
-    <h2>Iniciar sesión</h2>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flash-messages">
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
-          {% endfor %}
+
+<!-- Facebook SDK (Correcto) -->
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous"
+  src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v18.0&appId=839837051738520">
+</script>
+
+<header class="neon-header">
+  <h1>Bienvenido, {{ nombre }}</h1>
+  <a class="btn-neon" href="{{ url_for('logout') }}">Cerrar sesión</a>
+  <a class="btn-neon" href="{{ url_for('carrito') }}">🛒 Ver carrito</a>
+  <a class="btn-neon" href="{{ url_for('historial') }}">📜 Historial</a>
+</header>
+
+<main class="container">
+  <h2 style="text-align:center;">Catálogo de productos</h2>
+
+  {% for categoria in ['Caballero','Dama'] %}
+  <h3 style="margin-top:25px;">{{ categoria }}</h3>
+  <div class="row">
+
+    {% for p in productos if p.categoria == categoria %}
+    <div class="card" id="p{{ p.id }}">
+      <img src="{{ p.imagen }}" alt="{{ p.nombre }}">
+
+      <h4>{{ p.nombre }}</h4>
+      <p class="product-price">${{ p.precio }}</p>
+
+      <form method="get" action="{{ url_for('agregar_al_carrito', id=p.id) }}">
+        <button type="submit" class="btn-neon">Agregar al carrito</button>
+      </form>
+
+      <!-- 🔄 Botones sociales -->
+      <div class="social-share">
+
+        <!-- Facebook -->
+        <div class="fb-share-button"
+             data-href="https://zapateria-ayq0.onrender.com/productos#p{{ p.id }}"
+             data-layout="button"
+             data-size="small">
         </div>
-      {% endif %}
-    {% endwith %}
-    <form method="POST" action="{{ url_for('login') }}">
-      <label for="email">Correo electrónico:</label>
-      <input type="email" name="email" id="email" required>
 
-      <label for="password">Contraseña:</label>
-      <input type="password" name="password" id="password" required>
+        <!-- Twitter -->
+        <a href="https://twitter.com/share"
+           class="twitter-share-button"
+           data-url="https://zapateria-ayq0.onrender.com/productos#p{{ p.id }}"
+           data-text="👟 Mira este producto: {{ p.nombre }}"
+           data-show-count="false">Tweet</a>
 
-      <button type="submit">Ingresar</button>
-    </form>
-    <div class="register-link">
-      ¿No tienes cuenta? <a href="{{ url_for('registro') }}">Regístrate</a>
+      </div>
     </div>
-    <div class="register-link">
-      <a href="{{ url_for('privacidad') }}">Aviso de privacidad</a>
-    </div>
+    {% endfor %}
+
   </div>
+  {% endfor %}
+
+</main>
+
+<!-- Twitter SDK -->
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<!-- Firebase (versión correcta) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHUcOQIoUe2yj22d2SYCRQpJbJTd-PgPc",
+    authDomain: "loginappinventor-4e62e.firebaseapp.com",
+    projectId: "loginappinventor-4e62e",
+    storageBucket: "loginappinventor-4e62e.firebasestorage.app",
+    messagingSenderId: "920320791317",
+    appId: "1:920320791317:web:322577aa83b9573d844f1c",
+    measurementId: "G-P9T7TQD0TP"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
 </body>
 </html>
