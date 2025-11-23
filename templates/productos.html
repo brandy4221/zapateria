@@ -5,10 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Zapatería Hortencia - Productos</title>
 
-  <!-- ✅ CSS -->
+  <!-- CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='diseño.css') }}" />
 
-  <!-- ✅ Google Analytics -->
+  <!-- 🟦 OpenGraph Fallback para Facebook -->
+  <meta property="og:title" content="Catálogo de productos - Zapatería Hortencia">
+  <meta property="og:description" content="Explora nuestro catálogo de productos.">
+  <meta property="og:image" content="https://zapateria-ayq0.onrender.com/static/logo.png">
+  <meta property="og:url" content="https://zapateria-ayq0.onrender.com/productos">
+  <meta property="og:type" content="website">
+
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-V26XWVSSZ7"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -18,187 +25,108 @@
   </script>
 
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      background-color: #f8f8f8;
-    }
+    body { font-family: 'Poppins', sans-serif; margin: 0; background: #f8f8f8; }
     header.neon-header {
-      background: #1a56db;
-      color: #fff;
-      text-align: center;
-      padding: 15px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      background: #1a56db; color: #fff; padding: 15px; text-align: center;
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;
     }
-    .btn-neon {
-      background: #1939b7;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: 0.3s;
-      font-weight: bold;
-    }
-    .btn-neon:hover {
-      background: #0f2c8a;
-    }
-    .container {
-      padding: 20px;
-      max-width: 1200px;
-      margin: 30px auto;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    }
-    h2 {
-      text-align: center;
-      color: #222;
-    }
-    .row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-    }
+    .btn-neon { background: #1939b7; color: #fff; padding: 10px 15px; border-radius: 8px;
+                text-decoration: none; font-weight: bold; transition: .3s; }
+    .btn-neon:hover { background: #0f2c8a; }
+    .container { max-width: 1200px; margin: 25px auto; background: #fff; padding: 20px;
+                 border-radius: 10px; }
+    .row { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap: 20px; }
     .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      overflow: hidden;
-      transition: transform 0.2s;
-      padding-bottom: 15px;
+      background: #fff; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,.1);
+      text-align: center; padding-bottom: 15px; transition: transform .2s; overflow: hidden;
     }
-    .card:hover {
-      transform: scale(1.03);
-    }
-    .card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-    .product-price {
-      color: #4CAF50;
-      font-weight: bold;
-      margin: 5px 0;
-    }
-    .social-share {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      margin-top: 10px;
-      min-height: 30px;
-    }
-    @media (max-width: 600px) {
-      header.neon-header {
-        flex-direction: column;
-      }
-      .btn-neon {
-        width: 90%;
-      }
-    }
+    .card:hover { transform: scale(1.03); }
+    .card img { width: 100%; height: 180px; object-fit: cover; }
+    .product-price { font-weight: bold; color: #4CAF50; }
+    .social-share { display: flex; justify-content: center; gap: 10px; margin-top: 9px; }
   </style>
 </head>
 
 <body>
-  <!-- ✅ Facebook SDK -->
-  <div id="fb-root"></div>
-  <script async defer crossorigin="anonymous"
-    src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v18.0&appId=839837051738520&autoLogAppEvents=1">
-  </script>
 
-  <header class="neon-header">
-    <h1>Bienvenido, {{ nombre }}</h1>
-    <a href="{{ url_for('logout') }}" class="btn-neon">Cerrar sesión</a>
-    <a href="{{ url_for('carrito') }}" class="btn-neon">🛒 Ver carrito</a>
-    <a href="{{ url_for('historial') }}" class="btn-neon">📜 Historial</a>
-  </header>
+<!-- Facebook SDK (Correcto) -->
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous"
+  src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v18.0&appId=839837051738520">
+</script>
 
-  <main class="container">
-    <h2>Catálogo de productos</h2>
+<header class="neon-header">
+  <h1>Bienvenido, {{ nombre }}</h1>
+  <a class="btn-neon" href="{{ url_for('logout') }}">Cerrar sesión</a>
+  <a class="btn-neon" href="{{ url_for('carrito') }}">🛒 Ver carrito</a>
+  <a class="btn-neon" href="{{ url_for('historial') }}">📜 Historial</a>
+</header>
 
-    {% for categoria in ['Caballero', 'Dama'] %}
-    <section class="product-section">
-      <h3>{{ categoria }}</h3>
-      <div class="row">
-        {% for p in productos if p.categoria == categoria %}
-        <div class="card">
-          <img src="{{ p.imagen }}" alt="{{ p.nombre }}" />
-          <div class="card-body">
-            <h4>{{ p.nombre }}</h4>
-            <p class="product-price">${{ p.precio }}</p>
+<main class="container">
+  <h2 style="text-align:center;">Catálogo de productos</h2>
 
-            <form method="get" action="{{ url_for('agregar_al_carrito', id=p.id) }}">
-              <button type="submit" class="btn-neon">Agregar al carrito</button>
-            </form>
+  {% for categoria in ['Caballero','Dama'] %}
+  <h3 style="margin-top:25px;">{{ categoria }}</h3>
+  <div class="row">
 
-            <!-- 🔹 Botones sociales -->
-            <div class="social-share">
-              <!-- Facebook -->
-              <div class="fb-share-button"
-                   data-href="https://zapateria-ayq0.onrender.com/producto/{{ p.id }}"
-                   data-layout="button"
-                   data-size="small">
-              </div>
+    {% for p in productos if p.categoria == categoria %}
+    <div class="card" id="p{{ p.id }}">
+      <img src="{{ p.imagen }}" alt="{{ p.nombre }}">
 
-              <!-- Twitter -->
-              <a href="https://twitter.com/share"
-                 class="twitter-share-button"
-                 data-text="👟 Mira este producto en Zapatería Hortencia!"
-                 data-url="https://zapateria-ayq0.onrender.com/producto/{{ p.id }}"
-                 data-show-count="false">Tweet</a>
-            </div>
-          </div>
+      <h4>{{ p.nombre }}</h4>
+      <p class="product-price">${{ p.precio }}</p>
+
+      <form method="get" action="{{ url_for('agregar_al_carrito', id=p.id) }}">
+        <button type="submit" class="btn-neon">Agregar al carrito</button>
+      </form>
+
+      <!-- 🔄 Botones sociales -->
+      <div class="social-share">
+
+        <!-- Facebook -->
+        <div class="fb-share-button"
+             data-href="https://zapateria-ayq0.onrender.com/productos#p{{ p.id }}"
+             data-layout="button"
+             data-size="small">
         </div>
-        {% endfor %}
+
+        <!-- Twitter -->
+        <a href="https://twitter.com/share"
+           class="twitter-share-button"
+           data-url="https://zapateria-ayq0.onrender.com/productos#p{{ p.id }}"
+           data-text="👟 Mira este producto: {{ p.nombre }}"
+           data-show-count="false">Tweet</a>
+
       </div>
-    </section>
+    </div>
     {% endfor %}
-  </main>
 
-  <!-- ✅ Twitter SDK -->
-  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </div>
+  {% endfor %}
 
-  <!-- ✅ Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAHUcOQIoUe2yj22d2SYCRQpJbJTd-PgPc",
-      authDomain: "loginappinventor-4e62e.firebaseapp.com",
-      projectId: "loginappinventor-4e62e",
-      storageBucket: "loginappinventor-4e62e.firebasestorage.app",
-      messagingSenderId: "920320791317",
-      appId: "1:920320791317:web:322577aa83b9573d844f1c",
-      measurementId: "G-P9T7TQD0TP"
-    };
+</main>
 
-    try {
-      const app = firebase.initializeApp(firebaseConfig);
-      const analytics = firebase.analytics();
-      console.log("✅ Firebase inicializado correctamente");
-    } catch (err) {
-      console.warn("⚠️ Error al iniciar Firebase:", err);
-    }
-  </script>
+<!-- Twitter SDK -->
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-  <!-- ✅ Reparsers (Facebook + Twitter) -->
-  <script>
-    // Facebook: inicializa y reparsea
-    window.fbAsyncInit = function() {
-      FB.init({ xfbml: true, version: 'v18.0' });
-      FB.XFBML.parse();
-    };
+<!-- Firebase (versión correcta) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js";
 
-    // Twitter: carga widgets cuando la página está lista
-    window.addEventListener('load', function() {
-      if (window.twttr && twttr.widgets) twttr.widgets.load();
-    });
-  </script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHUcOQIoUe2yj22d2SYCRQpJbJTd-PgPc",
+    authDomain: "loginappinventor-4e62e.firebaseapp.com",
+    projectId: "loginappinventor-4e62e",
+    storageBucket: "loginappinventor-4e62e.firebasestorage.app",
+    messagingSenderId: "920320791317",
+    appId: "1:920320791317:web:322577aa83b9573d844f1c",
+    measurementId: "G-P9T7TQD0TP"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
 </body>
 </html>
