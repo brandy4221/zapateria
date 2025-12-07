@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <title>Aviso de Privacidad</title>
   <link rel="stylesheet" href="/static/diseño.css">
+  <link rel="manifest" href="/static/manifest.json">
+<script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js");
+    }
+  </script>
+
 </head>
 <body>
   <div class="container">

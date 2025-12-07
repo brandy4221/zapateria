@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  
   <meta charset="UTF-8">
   <title>Panel de Administración</title>
   <link rel="stylesheet" href="/static/diseño.css" />
   
   <style>
+
+    /* -------- TABLA BASE -------- */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -21,21 +24,87 @@
       background: #333;
       color: #fff;
     }
+
+    img {
+      max-width: 60px;
+      height: auto;
+      border-radius: 5px;
+    }
+
+    /* -------- BOTONES -------- */
     .btn-editar {
       background: #007bff;
       color: white;
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: 5px;
       text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
     }
     .btn-eliminar {
       background: #dc3545;
       color: white;
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: 5px;
-      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
     }
+
+    /* -------- RESPONSIVE -------- */
+
+    /* Contenedor scroll para tablas */
+    .tabla-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-top: 20px;
+    }
+
+    /* Inputs pequeños dentro de la tabla */
+    .edit-input {
+      width: 80px;
+      font-size: 12px;
+      padding: 4px;
+      margin: 2px 0;
+    }
+
+    /* En pantallas pequeñas */
+    @media (max-width: 768px) {
+
+      table th, table td {
+        padding: 5px;
+        font-size: 12px;
+      }
+
+      img {
+        max-width: 45px;
+      }
+
+      .btn-editar, .btn-eliminar {
+        padding: 4px 8px;
+        font-size: 10px;
+      }
+
+      /* Los formularios de editar ya NO ocupan toda la fila */
+      .acciones-container {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+    }
+
   </style>
+  <link rel="manifest" href="/static/manifest.json">
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js")
+      .then(() => console.log("SW registrado ✔"))
+      .catch(err => console.log("Error registrando SW", err));
+  }
+</script>
+
 </head>
 
 <body>
@@ -61,51 +130,55 @@
       <button type="submit" class="btn-neon">Agregar</button>
     </form>
 
-
-
     <!-- TABLA DE PRODUCTOS -->
     <h2 style="margin-top: 40px;">Productos registrados</h2>
 
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Precio</th>
-          <th>Imagen</th>
-          <th>Categoría</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
+    <div class="tabla-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Imagen</th>
+            <th>Categoría</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
 
-      <tbody>
-        {% for p in productos %}
-        <tr>
-          <td>{{ p.id }}</td>
-          <td>{{ p.nombre }}</td>
-          <td>${{ p.precio }}</td>
-          <td><img src="{{ p.imagen }}" alt="img" width="60"></td>
-          <td>{{ p.categoria }}</td>
-          
-          <td>
-            <!-- EDITAR -->
-            <form action="/editar-producto/{{ p.id }}" method="post" style="display:inline-block;">
-              <input type="text" name="nombre" value="{{ p.nombre }}" required>
-              <input type="number" step="0.01" name="precio" value="{{ p.precio }}" required>
-              <input type="text" name="imagen" value="{{ p.imagen }}" required>
-              <input type="text" name="categoria" value="{{ p.categoria }}" required>
-              <button class="btn-editar" type="submit">Editar</button>
-            </form>
+        <tbody>
+          {% for p in productos %}
+          <tr>
+            <td>{{ p.id }}</td>
+            <td>{{ p.nombre }}</td>
+            <td>${{ p.precio }}</td>
+            <td><img src="{{ p.imagen }}" alt="img"></td>
+            <td>{{ p.categoria }}</td>
+            
+            <td>
+              <div class="acciones-container">
 
-            <!-- ELIMINAR -->
-            <form action="/eliminar-producto/{{ p.id }}" method="post" style="display:inline-block;">
-              <button class="btn-eliminar" type="submit" onclick="return confirm('¿Eliminar este producto?')">Eliminar</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+                <!-- EDITAR -->
+                <form action="/editar-producto/{{ p.id }}" method="post" style="display:inline-block;">
+                  <input type="text" class="edit-input" name="nombre" value="{{ p.nombre }}" required>
+                  <input type="number" step="0.01" class="edit-input" name="precio" value="{{ p.precio }}" required>
+                  <input type="text" class="edit-input" name="imagen" value="{{ p.imagen }}" required>
+                  <input type="text" class="edit-input" name="categoria" value="{{ p.categoria }}" required>
+                  <button class="btn-editar" type="submit">Editar</button>
+                </form>
+
+                <!-- ELIMINAR -->
+                <form action="/eliminar-producto/{{ p.id }}" method="post" style="display:inline-block;">
+                  <button class="btn-eliminar" type="submit" onclick="return confirm('¿Eliminar este producto?')">Eliminar</button>
+                </form>
+
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
   </main>
 </body>

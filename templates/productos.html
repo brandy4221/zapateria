@@ -45,6 +45,15 @@
     .product-price { font-weight: bold; color: #4CAF50; }
     .social-share { display: flex; justify-content: center; gap: 10px; margin-top: 9px; }
   </style>
+  <link rel="manifest" href="/static/manifest.json">
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js")
+      .then(() => console.log("SW registrado ✔"))
+      .catch(err => console.log("Error registrando SW", err));
+  }
+</script>
+
 </head>
 
 <body>

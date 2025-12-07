@@ -275,6 +275,13 @@ def logout():
 @app.route('/healthz')
 def health():
     return 'OK', 200
+from flask import send_from_directory, make_response
+
+@app.route('/service-worker.js')
+def service_worker():
+    response = make_response(send_from_directory('static', 'service-worker.js'))
+    response.headers['Content-Type'] = 'application/javascript'
+    return response
 
 # =========================
 # 🚫 Sin cabeceras de seguridad (modo prueba)
